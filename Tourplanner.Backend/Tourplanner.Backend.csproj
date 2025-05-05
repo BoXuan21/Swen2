@@ -8,4 +8,8 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\TourPlanner\TourPlanner.csproj" />
+    </ItemGroup>
+
 </Project>

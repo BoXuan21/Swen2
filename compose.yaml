@@ -1,6 +1,0 @@
-﻿services:
-  tourplanner.backend:
-    image: tourplanner.backend
-    build:
-      context: .
-      dockerfile: Tourplanner.Backend/Dockerfile
