@@ -1,5 +1,6 @@
 ﻿using System;
-using Npgsql; // Installiere das NuGet-Paket "Npgsql" für PostgreSQL-Zugriffe
+using System.IO;
+using Npgsql;
 
 namespace TourPlanner
 {
@@ -7,21 +8,55 @@ namespace TourPlanner
     {
         static void Main(string[] args)
         {
-            // Verbindung zur PostgreSQL-Datenbank
             string connectionString =
                 "Host=localhost;Database=swen2;Username=postgres;Password=postgres;Include Error Detail=true;";
 
+            string sqlFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SQL");
+
+            // Sicherstellen, dass der Ordner für SQL-Skripte existiert
+            if (!Directory.Exists(sqlFolderPath))
+            {
+                Directory.CreateDirectory(sqlFolderPath);
+                CreateSqlFiles(sqlFolderPath);
+                Console.WriteLine($"SQL-Verzeichnis und Skriptdateien wurden unter folgendem Pfad erstellt: {sqlFolderPath}");
+            }
+
             try
             {
-                using (var connection = new NpgsqlConnection(connectionString))
-                {
-                    connection.Open();
-                    Console.WriteLine("Verbindung zur Datenbank erfolgreich!");
-                }
+                var dbInitializer = new DatabaseInitializer(connectionString, sqlFolderPath);
+
+                dbInitializer.InitializeDatabase(); // Datenbank initialisieren
+                
+                Console.WriteLine("\nDie Datenbank wurde erfolgreich initialisiert.");
+                Console.WriteLine("Drücken Sie die Eingabetaste, um das Programm zu beenden und die Tabellen zu löschen...");
+                Console.ReadLine();
+
+                dbInitializer.DropTables(); // Tabellen löschen
+                Console.WriteLine("Das Programm wurde beendet und die Datenbanktabellen wurden gelöscht.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Fehler beim Herstellen der Verbindung: {ex.Message}");
+                Console.WriteLine($"Fehler: {ex.Message}");
+                Console.WriteLine("Das Programm wird beendet. Drücken Sie die Eingabetaste, um fortzufahren...");
+                Console.ReadLine();
+            }
+        }
+
+        private static void CreateSqlFiles(string sqlFolderPath)
+        {
+            string dropSqlPath = Path.Combine(sqlFolderPath, "drop.sql");
+            string initSqlPath = Path.Combine(sqlFolderPath, "init.sql");
+
+            if (!File.Exists(dropSqlPath))
+            {
+                File.WriteAllText(dropSqlPath, "-- SQL zum Löschen aller Tabellen\n");
+                Console.WriteLine("drop.sql automatisch erstellt.");
+            }
+
+            if (!File.Exists(initSqlPath))
+            {
+                File.WriteAllText(initSqlPath, "-- SQL zur Initialisierung der Datenbank\n");
+                Console.WriteLine("init.sql automatisch erstellt.");
             }
         }
     }
