@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using Npgsql;
 
-namespace TourPlanner
+namespace TourPlanner.Data
 {
     public class DatabaseInitializer
     {

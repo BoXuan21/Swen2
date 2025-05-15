@@ -3,39 +3,28 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TourPlanner.Frontend"
+        xmlns:local="clr-namespace:TourPlanner.Frontend" 
+        xmlns:views="clr-namespace:TourPlanner.Frontend.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <DockPanel>
+    <DockPanel Margin="10">
         <TabControl DockPanel.Dock="Top">
-            <TabItem Header="Tours"></TabItem>
-            <TabItem Header="Logs"></TabItem>
-            <TabItem Header="Lists"></TabItem>
-            <TabItem Header="Options"></TabItem>
-            <TabItem Header="Help"></TabItem>
+            <TabItem Header="Tours">
+                <views:ToursTab/>
+            </TabItem>
+            <TabItem Header="Logs">
+                <views:LogsTab/>
+            </TabItem>
+            <TabItem Header="Lists">
+                <views:ListsPage/>
+            </TabItem>
+            <TabItem Header="Options">
+                <views:OptionsPage/>
+            </TabItem>
+            <TabItem Header="Help">
+                <views:HelpPage/>
+            </TabItem>
         </TabControl>
-        <Grid Margin="10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="5*" />
-            </Grid.ColumnDefinitions>
-            <StackPanel Grid.Column="0" Background="#CCC" Margin="0,0,10,0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,10,0">
-                    <Button Content="+" Width="30" Margin="2"/>
-                    <Button Content="−" Width="30" Margin="2"/>
-                    <Button Content="⚙" Width="30" Margin="2"/>
-                </StackPanel>
-                <ListBox Margin="10" VerticalAlignment="Stretch">
-                    <ListBoxItem Content="Tour1"/>
-                </ListBox>
-            </StackPanel>
-            <StackPanel Grid.Column="1" Background="#AAA">
-                <TextBox Margin="10" Height="150" BorderBrush="Black" BorderThickness="1"/>
-                <TextBlock Margin="10,5" Text="Info for Tour1"/>
-            </StackPanel>
-        </Grid>
-        
-
     </DockPanel>
     
 </Window>
