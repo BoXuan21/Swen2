@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Npgsql;
+using TourPlanner.Data;
 
 namespace TourPlanner
 {
@@ -11,7 +12,10 @@ namespace TourPlanner
             string connectionString =
                 "Host=localhost;Database=swen2;Username=postgres;Password=postgres;Include Error Detail=true;";
 
-            string sqlFolderPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SQL");
+            string sqlFolderPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "SQL");
+            sqlFolderPath = Path.GetFullPath(sqlFolderPath);
+
+            Console.WriteLine(sqlFolderPath);
 
             // Sicherstellen, dass der Ordner für SQL-Skripte existiert
             if (!Directory.Exists(sqlFolderPath))
