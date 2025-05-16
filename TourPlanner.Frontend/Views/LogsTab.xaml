@@ -11,7 +11,6 @@
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Date" />
                 <DataGridTextColumn Header="Title" />
-                <DataGridTextColumn Header="Difficulty" />
                 <DataGridTextColumn Header="Total Distance" />
                 <DataGridTextColumn Header="Total Time" />
                 <DataGridTextColumn Header="Rating" />

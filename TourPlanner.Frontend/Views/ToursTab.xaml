@@ -5,25 +5,105 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TourPlanner.Frontend.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="650" d:DesignWidth="1000">
     <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Background="#CCC" Margin="0,0,10,0">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,10,0">
-                <Button Content="+" Width="30" Margin="2"/>
-                <Button Content="−" Width="30" Margin="2"/>
-                <Button Content="⚙" Width="30" Margin="2"/>
+
+        <!-- Left Panel - Tour List -->
+        <DockPanel Grid.Column="0" Background="#F5F5F5" Margin="0,0,10,0">
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,10,10">
+                <Button x:Name="CreateButton" Content="Create" Width="60" Margin="2" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
+                <Button x:Name="DeleteButton" Content="Delete" Width="60" Margin="2" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
+                <Button x:Name="ModifyButton" Content="Modify" Width="60" Margin="2" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
             </StackPanel>
-            <ListBox Margin="10" VerticalAlignment="Stretch">
-                <ListBoxItem Content="Tour1"/>
+            <ListBox x:Name="TourList" DockPanel.Dock="Bottom" Margin="10" Background="White" BorderThickness="1" BorderBrush="#DDDDDD">
+                <ListBoxItem Content="Sample Tour 1"/>
+                <ListBoxItem Content="Sample Tour 2"/>
             </ListBox>
-        </StackPanel>
-        <StackPanel Grid.Column="1" Background="#AAA">
-            <TextBox Margin="10" Height="150" BorderBrush="Black" BorderThickness="1"/>
-            <TextBlock Margin="10,5" Text="Info for Tour1"/>
-        </StackPanel>
+        </DockPanel>
+
+        <!-- Right Panel - Tour Details -->
+        <DockPanel Grid.Column="1" Background="White">
+            <TabControl>
+                <!-- General Tab -->
+                <TabItem Header="General">
+                    <ScrollViewer>
+                        <StackPanel Margin="10">
+                            <!-- Tour Basic Info -->
+                            <GroupBox Header="Tour Information" Margin="0,0,0,10">
+                                <Grid Margin="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="Name:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                                    <TextBlock Text="Sample Tour" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+                                    <TextBlock Text="Description:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                                    <TextBlock Text="Sample tour description" Grid.Row="1" Grid.Column="1" Margin="5" TextWrapping="Wrap"/>
+
+                                    <TextBlock Text="From:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                                    <TextBlock Text="Starting Point" Grid.Row="2" Grid.Column="1" Margin="5"/>
+
+                                    <TextBlock Text="To:" Grid.Row="3" Grid.Column="0" Margin="5"/>
+                                    <TextBlock Text="Destination" Grid.Row="3" Grid.Column="1" Margin="5"/>
+
+                                    <TextBlock Text="Transport Type:" Grid.Row="4" Grid.Column="0" Margin="5"/>
+                                    <TextBlock Text="Car" Grid.Row="4" Grid.Column="1" Margin="5"/>
+
+                                    <TextBlock Text="Distance:" Grid.Row="5" Grid.Column="0" Margin="5"/>
+                                    <TextBlock Text="10 km" Grid.Row="5" Grid.Column="1" Margin="5"/>
+                                </Grid>
+                            </GroupBox>
+
+                            <!-- Route Information -->
+                            <GroupBox Header="Route Information" Margin="0,0,0,10">
+                                <Border Height="200" Background="#F5F5F5" Margin="5">
+                                    <TextBlock Text="Route Map will be displayed here" 
+                                             HorizontalAlignment="Center" 
+                                             VerticalAlignment="Center"/>
+                                </Border>
+                            </GroupBox>
+
+                            <!-- Associated Lists -->
+                            <GroupBox Header="Associated Lists" Margin="0,0,0,10">
+                                <ListBox Height="100" Margin="5">
+                                    <ListBoxItem Content="List 1"/>
+                                    <ListBoxItem Content="List 2"/>
+                                </ListBox>
+                            </GroupBox>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- Logs Tab -->
+                <TabItem Header="Logs">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
+                            <Button Content="Button 1" Margin="0,0,5,0"/>
+                            <Button Content="Button 2" Margin="0,0,5,0"/>
+                            <Button Content="Button 3" Margin="0,0,5,0"/>
+                        </StackPanel>
+                        <ListBox Margin="10">
+                            <ListBoxItem Content="Log Entry 1"/>
+                            <ListBoxItem Content="Log Entry 2"/>
+                            <ListBoxItem Content="Log Entry 3"/>
+                        </ListBox>
+                    </DockPanel>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
     </Grid>
 </UserControl>
