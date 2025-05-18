@@ -1,12 +1,11 @@
-﻿using System;
+using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows.Input;
 using TourPlanner.Frontend.Utils;
 
 namespace TourPlanner.Frontend.ViewModels
 {
-    public class CreateTourPopupViewModel : INotifyPropertyChanged
+    public class ModifyTourPopupViewModel : INotifyPropertyChanged
     {
         private string _tourName;
         public string TourName
@@ -52,7 +51,7 @@ namespace TourPlanner.Frontend.ViewModels
             }
         }
 
-        private string _transportType = "Car"; // Default value
+        private string _transportType = "Car";
         public string TransportType
         {
             get => _transportType;
@@ -63,27 +62,39 @@ namespace TourPlanner.Frontend.ViewModels
             }
         }
 
-        public ICommand CreateCommand { get; }
+        public ICommand ModifyCommand { get; }
         public ICommand CancelCommand { get; }
 
         public event Action? RequestClose;
+        public event Action<bool>? ModificationConfirmed;
 
-        public CreateTourPopupViewModel()
+        public ModifyTourPopupViewModel(string tourName, string from, string to, string distance, string transportType)
         {
-            CreateCommand = new RelayCommand(OnCreate);
+            // Initialize with existing tour data
+            TourName = tourName;
+            From = from;
+            To = to;
+            Distance = distance;
+            TransportType = transportType;
+
+            ModifyCommand = new RelayCommand(OnModify);
             CancelCommand = new RelayCommand(OnCancel);
         }
 
-        private void OnCreate()
+        private void OnModify()
         {
-            // Add validation and call service here if needed
+            ModificationConfirmed?.Invoke(true);
             RequestClose?.Invoke();
         }
 
-        private void OnCancel() => RequestClose?.Invoke();
+        private void OnCancel()
+        {
+            ModificationConfirmed?.Invoke(false);
+            RequestClose?.Invoke();
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
-}
+} 

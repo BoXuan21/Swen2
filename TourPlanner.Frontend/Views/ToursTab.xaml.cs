@@ -20,14 +20,60 @@ namespace TourPlanner.Frontend.Views
             var viewModel = new ToursTabViewModel();
             DataContext = viewModel;
 
-            // Invokes RequestOpenCreatePopup and executes functions in the brackets
+            // Create popup handler
             viewModel.RequestOpenCreatePopup += () =>
             {
-                var popup = new CreateTourPopup(); // this is a Window
+                var popup = new CreateTourPopup();
                 var popupVm = new CreateTourPopupViewModel();
                 popup.DataContext = popupVm;
-                popupVm.RequestClose += () => popup.Close(); // Assigns function to the button to close the window when pressed
-                popup.ShowDialog(); // Opens popup
+                popupVm.RequestClose += () => popup.Close();
+                popup.ShowDialog();
+            };
+
+            // Delete popup handler
+            viewModel.RequestOpenDeletePopup += (tourName) =>
+            {
+                var popup = new DeleteTourPopup();
+                var popupVm = new DeleteTourPopupViewModel(tourName);
+                popup.DataContext = popupVm;
+                
+                popupVm.RequestClose += () => popup.Close();
+                popupVm.DeleteConfirmed += (confirmed) =>
+                {
+                    if (confirmed)
+                    {
+                        // TODO: Implement actual delete logic here
+                        // viewModel.DeleteTour(tourName);
+                    }
+                };
+                
+                popup.ShowDialog();
+            };
+
+            // Modify popup handler
+            viewModel.RequestOpenModifyPopup += (tourName) =>
+            {
+                // TODO: Get the actual tour data here
+                string from = "Current From Location";
+                string to = "Current To Location";
+                string distance = "Current Distance";
+                string transportType = "Car";
+
+                var popup = new ModifyTourPopup();
+                var popupVm = new ModifyTourPopupViewModel(tourName, from, to, distance, transportType);
+                popup.DataContext = popupVm;
+                
+                popupVm.RequestClose += () => popup.Close();
+                popupVm.ModificationConfirmed += (confirmed) =>
+                {
+                    if (confirmed)
+                    {
+                        // TODO: Implement actual modify logic here
+                        // viewModel.ModifyTour(popupVm.TourName, popupVm.From, popupVm.To, popupVm.Distance, popupVm.TransportType);
+                    }
+                };
+                
+                popup.ShowDialog();
             };
 
             // Find and hook up the tour list
