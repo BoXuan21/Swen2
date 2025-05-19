@@ -1,30 +1,50 @@
-﻿using TourPlaner.Models;
+﻿using TourPlanner.Models;
 using TourPlanner.Data;
 using TourPlanner.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace TourPlanner.Test.RepositoryTests
 {
     public class ToursTest
     {
         [Fact]
-        public void TourCreatedTest()
+        public async Task TourCreatedTest()
         {
-            string id = new Guid().ToString();
-            string name = "TestName";
-            string description = "TestDescription";
-            string from = "Korneuburg";
-            string to = "Vienna";
-            string transportType = "Car";
-            float distance = 16.0f;
-            int estimatedTime = 200;
-            string routeInformation = "testPic";
-            Tour newTour = new Tour(id, name, description, from, to, transportType, distance, estimatedTime, routeInformation, null);
+            // Arrange
+            var options = new DbContextOptionsBuilder<TourPlannerContext>()
+                .UseInMemoryDatabase(databaseName: "TestDb")
+                .Options;
 
-            IToursRepository tourRepo = new ToursRepository(new TourPlannerDbContext());
+            using var context = new TourPlannerContext(options);
+            var tourRepo = new TourRepository(context);
 
-            tourRepo.CreateTour(newTour);
+            // Create a new tour using the default constructor
+            var newTour = new Tour
+            {
+                Name = "TestName",
+                Description = "TestDescription",
+                FromLocation = "Korneuburg",
+                ToLocation = "Vienna",
+                TransportType = "Car",
+                Distance = 16.0f,
+                EstimatedTime = 200,
+                RouteInformation = "testPic"
+            };
 
-            Assert.Equal(newTour, tourRepo.GetTourById(id));
+            // Act
+            var createdTour = await tourRepo.CreateAsync(newTour);
+            var retrievedTour = await tourRepo.GetByIdAsync(createdTour.Id);
+
+            // Assert
+            Assert.NotNull(retrievedTour);
+            Assert.Equal(newTour.Name, retrievedTour.Name);
+            Assert.Equal(newTour.Description, retrievedTour.Description);
+            Assert.Equal(newTour.FromLocation, retrievedTour.FromLocation);
+            Assert.Equal(newTour.ToLocation, retrievedTour.ToLocation);
+            Assert.Equal(newTour.TransportType, retrievedTour.TransportType);
+            Assert.Equal(newTour.Distance, retrievedTour.Distance);
+            Assert.Equal(newTour.EstimatedTime, retrievedTour.EstimatedTime);
+            Assert.Equal(newTour.RouteInformation, retrievedTour.RouteInformation);
         }
     }
 }

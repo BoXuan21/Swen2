@@ -1,34 +1,34 @@
--- Create List table (creating this first since it's referenced by Tours)
-CREATE TABLE IF NOT EXISTS lists (
-                                    Id VARCHAR(50) PRIMARY KEY,
-    Name VARCHAR(100),
-    Description TEXT
-    );
+-- Create tables in order to respect foreign keys
+CREATE TABLE IF NOT EXISTS "Lists" (
+    "Id" VARCHAR(255) PRIMARY KEY,
+    "Name" VARCHAR(255) NOT NULL,
+    "Description" TEXT
+);
 
--- Create Tours table
-CREATE TABLE IF NOT EXISTS tours (
-                                     Id VARCHAR(50) PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
-    Description TEXT,
-    FromLocation VARCHAR(100), -- From location (using "Fromt" as "From" is a reserved word in SQL)
-    ToLocation VARCHAR(100),
-    transportType VARCHAR(50),
-    Distance VARCHAR(50),
-    EstimatedTime INT,
-    routeInformation TEXT,
-    listId VARCHAR(50),
-    FOREIGN KEY (listId) REFERENCES lists(Id)
-    );
+CREATE TABLE IF NOT EXISTS "Tours" (
+    "Id" VARCHAR(255) PRIMARY KEY,
+    "Name" VARCHAR(255) NOT NULL,
+    "Description" TEXT,
+    "FromLocation" VARCHAR(255) NOT NULL,
+    "ToLocation" VARCHAR(255) NOT NULL,
+    "TransportType" VARCHAR(255) NOT NULL,
+    "Distance" REAL NOT NULL,
+    "EstimatedTime" INTEGER NOT NULL,
+    "RouteInformation" TEXT,
+    "ListId" VARCHAR(255) NULL,
+    CONSTRAINT "FK_Tours_Lists_ListId" FOREIGN KEY ("ListId") REFERENCES "Lists" ("Id")
+);
 
--- Create Logs table
-CREATE TABLE IF NOT EXISTS logs (
-                                    Id VARCHAR(50) PRIMARY KEY,
-    dateTime TIMESTAMP NOT NULL,
-    Comment TEXT,
-    Difficulty INT CHECK (Difficulty BETWEEN 1 AND 10),
-    Totaldistance FLOAT,
-    totalTime INTERVAL,
-    Rating INT CHECK (Rating BETWEEN 1 AND 10),
-    TourID VARCHAR(50) NOT NULL,
-    FOREIGN KEY (TourID) REFERENCES tours(Id)
-    );
+CREATE TABLE IF NOT EXISTS "TourLogs" (
+    "Id" VARCHAR(255) PRIMARY KEY,
+    "Date" TIMESTAMP NOT NULL,
+    "Comment" TEXT NOT NULL,
+    "Difficulty" INTEGER NOT NULL,
+    "Rating" INTEGER NOT NULL,
+    "Duration" INTERVAL NOT NULL,
+    "TourId" VARCHAR(255) NOT NULL,
+    CONSTRAINT "FK_TourLogs_Tours_TourId" FOREIGN KEY ("TourId") REFERENCES "Tours" ("Id") ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "IX_TourLogs_TourId" ON "TourLogs" ("TourId");
+CREATE INDEX IF NOT EXISTS "IX_Tours_ListId" ON "Tours" ("ListId");

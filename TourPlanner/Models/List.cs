@@ -3,16 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
-namespace Tourplaner.backend.Models
+namespace TourPlanner.Models
 {
-    internal class List
+    public class List
     {
-        private string Id { get; set; }
-
-        public List(string id)
+        [Key]
+        public string Id { get; set; }
+        
+        [Required]
+        public string Name { get; set; }
+        
+        public string Description { get; set; }
+        
+        public ICollection<Tour> Tours { get; set; }
+        
+        public List()
         {
-            this.Id = id;
+            Id = Guid.NewGuid().ToString();
+            Tours = new List<Tour>();
         }
     }
 }
