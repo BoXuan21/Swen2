@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS tours (
     ToLocation VARCHAR(100),
     transportType VARCHAR(50),
     Distance VARCHAR(50),
-    EstimatedTime INTERVAL,
+    EstimatedTime INT,
     routeInformation TEXT,
     listId VARCHAR(50),
     FOREIGN KEY (listId) REFERENCES lists(Id)

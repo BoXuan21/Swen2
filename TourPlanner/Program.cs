@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using TourPlanner.Data;
 
@@ -29,14 +31,14 @@ namespace TourPlanner
             {
                 var dbInitializer = new DatabaseInitializer(connectionString, sqlFolderPath);
 
-                dbInitializer.InitializeDatabase(); // Datenbank initialisieren
+                dbInitializer.DropTables(); 
+                Console.WriteLine("Database cleared");
+
+                dbInitializer.InitializeDatabase();
                 
-                Console.WriteLine("\nDie Datenbank wurde erfolgreich initialisiert.");
-                Console.WriteLine("Drücken Sie die Eingabetaste, um das Programm zu beenden und die Tabellen zu löschen...");
+                Console.WriteLine("\nThe database is successfully initialized.");
                 Console.ReadLine();
 
-                dbInitializer.DropTables(); // Tabellen löschen
-                Console.WriteLine("Das Programm wurde beendet und die Datenbanktabellen wurden gelöscht.");
             }
             catch (Exception ex)
             {

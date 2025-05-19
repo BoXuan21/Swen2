@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tourplaner.backend.Models
+namespace TourPlaner.Models
 {
-    internal class Log
+    public class Log
     {
-        private string Id { get; set; }
-        private string DateTime { get; set; }
-        private string Comment { get; set; }
-        private int Difficulty { get; set; }
-        private float TotalDistance { get; set; }
-        private int TotalTime { get; set; }
-        private int Rating { get; set; }
-        private string TourId { get; set; }
+        public string Id { get; set; }
+        public string DateTime { get; set; }
+        public string Comment { get; set; }
+        public int Difficulty { get; set; }
+        public float TotalDistance { get; set; }
+        public int TotalTime { get; set; }
+        public int Rating { get; set; }
+        public string TourId { get; set; }
 
         public Log(string id, string dateTime, string comment, int difficulty, float totalDistance, int totalTime, int rating, string tourId)
         {
