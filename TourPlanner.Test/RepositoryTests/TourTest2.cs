@@ -1,4 +1,4 @@
-﻿using TourPlanner.Models;
+using TourPlanner.Models;
 using TourPlanner.Data;
 using TourPlanner.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +6,7 @@ using Npgsql;
 
 namespace TourPlanner.Test.RepositoryTests
 {
-    public class ToursTest
+    public class ToursTest2
     {
         [Fact]
         public async Task TourCreatedAndStoredTest()
