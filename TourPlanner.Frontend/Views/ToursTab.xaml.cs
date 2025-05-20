@@ -26,9 +26,6 @@ namespace TourPlanner.Frontend.Views
             _tourApiClient = new TourApiClient();
             _tourNames = new ObservableCollection<string>();
             
-            // Display the API URL
-            ApiUrlDisplay.Text = $"API URL: {_tourApiClient.ApiBaseUrl}";
-            
             // Clear the ListBox at startup
             if (FindName("TourList") is ListBox tourList)
             {

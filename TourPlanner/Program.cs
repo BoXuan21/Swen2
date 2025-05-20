@@ -122,7 +122,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 Console.WriteLine("Registering services...");
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
 // Configure PostgreSQL database connection
 builder.Services.AddDbContext<TourPlannerContext>(options =>
@@ -130,6 +135,7 @@ builder.Services.AddDbContext<TourPlannerContext>(options =>
 
 // Register repositories
 builder.Services.AddScoped<ITourRepository, TourRepository>();
+builder.Services.AddScoped<ILogsRepository, LogsRepository>();
 
 // Add API explorer and Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -157,6 +163,13 @@ if (app.Environment.IsDevelopment())
     Console.WriteLine("Development mode: Swagger UI enabled at /swagger");
 }
 
+// Important: Use CORS before other middleware
+app.UseCors("AllowAll");
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
 // Seed the database with initial data
 Console.WriteLine("Seeding database with initial data...");
 using (var scope = app.Services.CreateScope())
@@ -178,11 +191,6 @@ using (var scope = app.Services.CreateScope())
         Console.ResetColor();
     }
 }
-
-app.UseHttpsRedirection();
-app.UseCors("AllowAll"); // Use the "AllowAll" CORS policy
-app.UseAuthorization();
-app.MapControllers();
 
 // Get server URLs and display them
 var serverAddresses = app.Urls.ToList();

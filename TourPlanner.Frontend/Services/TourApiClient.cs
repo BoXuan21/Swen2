@@ -14,65 +14,65 @@ namespace TourPlanner.Frontend.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _baseUrl;
-        public string ApiBaseUrl => _baseUrl;
+        private readonly JsonSerializerOptions _jsonOptions;
 
         public TourApiClient()
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            _httpClient.Timeout = TimeSpan.FromSeconds(5); // Increased timeout slightly
+            _httpClient.Timeout = TimeSpan.FromSeconds(5);
+            _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-            // Get the API URL from config or use default if not found
             try
             {
                 _baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "https://localhost:7022/api";
-                Debug.WriteLine($"TourApiClient initialized with base URL from config: {_baseUrl}");
+                Debug.WriteLine($"TourApiClient initialized with base URL: {_baseUrl}");
             }
             catch (Exception ex)
             {
-                _baseUrl = "https://localhost:7022/api"; // Default fallback
+                _baseUrl = "https://localhost:7022/api";
                 Debug.WriteLine($"Error reading config, using default URL: {_baseUrl}. Error: {ex.Message}");
             }
         }
 
-        public async Task<List<JsonObject>> GetToursAsync()
+        private async Task<T> GetAsync<T>(string endpoint)
         {
-            Debug.WriteLine($"Attempting to fetch tours from {_baseUrl}/Tour");
-            var response = await _httpClient.GetAsync($"{_baseUrl}/Tour");
-            
-            Debug.WriteLine($"Response status: {response.StatusCode}");
+            var response = await _httpClient.GetAsync($"{_baseUrl}/{endpoint}");
             response.EnsureSuccessStatusCode();
-            
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            
-            var tours = await response.Content.ReadFromJsonAsync<List<JsonObject>>(options);
-            Debug.WriteLine($"Successfully retrieved {tours.Count} tours from API");
-            return tours;
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
         }
 
-        public async Task<JsonObject> GetTourByIdAsync(string id)
+        private async Task<T> PostAsync<T>(string endpoint, object data)
         {
-            var response = await _httpClient.GetAsync($"{_baseUrl}/Tour/{id}");
+            var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/{endpoint}", data);
             response.EnsureSuccessStatusCode();
-            
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            
-            return await response.Content.ReadFromJsonAsync<JsonObject>(options);
+            return await response.Content.ReadFromJsonAsync<T>(_jsonOptions);
         }
+
+        private async Task PutAsync(string endpoint, object data)
+        {
+            var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/{endpoint}", data);
+            response.EnsureSuccessStatusCode();
+        }
+
+        private async Task DeleteAsync(string endpoint)
+        {
+            var response = await _httpClient.DeleteAsync($"{_baseUrl}/{endpoint}");
+            response.EnsureSuccessStatusCode();
+        }
+
+        // Tour endpoints
+        public async Task<List<JsonObject>> GetToursAsync() => 
+            await GetAsync<List<JsonObject>>("Tour");
+
+        public async Task<JsonObject> GetTourByIdAsync(string id) => 
+            await GetAsync<JsonObject>($"Tour/{id}");
 
         public async Task<JsonObject> CreateTourAsync(string name, string description, string from, string to, string transportType, float distance)
         {
-            var tourId = Guid.NewGuid().ToString();
-            
             var tour = new
             {
-                Id = tourId,
+                Id = Guid.NewGuid().ToString(),
                 Name = name,
                 Description = description ?? "",
                 FromLocation = from,
@@ -84,15 +84,7 @@ namespace TourPlanner.Frontend.Services
                 ListId = (string)null
             };
             
-            var response = await _httpClient.PostAsJsonAsync($"{_baseUrl}/Tour", tour);
-            response.EnsureSuccessStatusCode();
-            
-            var options = new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            };
-            
-            return await response.Content.ReadFromJsonAsync<JsonObject>(options);
+            return await PostAsync<JsonObject>("Tour", tour);
         }
 
         public async Task UpdateTourAsync(string id, string name, string description, string from, string to, string transportType, float distance)
@@ -111,14 +103,50 @@ namespace TourPlanner.Frontend.Services
                 ListId = (string)null
             };
             
-            var response = await _httpClient.PutAsJsonAsync($"{_baseUrl}/Tour/{id}", tour);
-            response.EnsureSuccessStatusCode();
+            await PutAsync($"Tour/{id}", tour);
         }
 
-        public async Task DeleteTourAsync(string id)
+        public async Task DeleteTourAsync(string id) => 
+            await DeleteAsync($"Tour/{id}");
+
+        // Log endpoints
+        public async Task<JsonArray> GetLogsByTourIdAsync(string tourId) => 
+            await GetAsync<JsonArray>($"TourLog/tour/{tourId}");
+
+        public async Task<JsonObject> CreateLogAsync(string tourId, string comment, int difficulty, int rating, TimeSpan duration)
         {
-            var response = await _httpClient.DeleteAsync($"{_baseUrl}/Tour/{id}");
-            response.EnsureSuccessStatusCode();
+            var log = new
+            {
+                Id = Guid.NewGuid().ToString(),
+                Date = DateTime.Now,
+                Comment = comment,
+                Difficulty = difficulty,
+                Rating = rating,
+                Duration = duration,
+                TourId = tourId
+            };
+            
+            Debug.WriteLine($"Creating log for tour {tourId}");
+            return await PostAsync<JsonObject>("TourLog", log);
         }
+
+        public async Task UpdateLogAsync(string id, string tourId, DateTime date, string comment, int difficulty, int rating, TimeSpan duration)
+        {
+            var log = new
+            {
+                Id = id,
+                TourId = tourId,
+                Date = date,
+                Comment = comment,
+                Difficulty = difficulty,
+                Rating = rating,
+                Duration = duration
+            };
+            
+            await PutAsync($"TourLog/{id}", log);
+        }
+
+        public async Task DeleteLogAsync(string id) => 
+            await DeleteAsync($"TourLog/{id}");
     }
 } 

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using TourPlanner.Models;
 
 namespace TourPlanner.Data.Repositories
 {
-    internal interface ILogsRepository
+    public interface ILogsRepository
     {
+        Task<IEnumerable<TourLog>> GetLogsByTourIdAsync(string tourId);
+        Task<TourLog> GetLogByIdAsync(string id);
+        Task<TourLog> CreateLogAsync(TourLog log);
+        Task<TourLog> UpdateLogAsync(TourLog log);
+        Task DeleteLogAsync(string id);
     }
 }
