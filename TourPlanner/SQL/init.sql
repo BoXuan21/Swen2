@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS tours (
     FromLocation VARCHAR(100), -- From location (using "Fromt" as "From" is a reserved word in SQL)
     ToLocation VARCHAR(100),
     transportType VARCHAR(50),
-    Distance VARCHAR(50),
+    Distance FLOAT,
     EstimatedTime INT,
     routeInformation TEXT,
     listId VARCHAR(50),

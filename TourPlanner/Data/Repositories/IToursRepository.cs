@@ -12,6 +12,7 @@ namespace TourPlanner.Data.Repositories
         public void CreateTour(Tour newTour);
         public Tour[] GetTours();
         public Tour GetTourById(string id);
+        public List<Tour> GetTourByName(string name);
         public void DeleteTour(string id);
         public void ModifyTour(string currentTour, Tour newTour);
     }

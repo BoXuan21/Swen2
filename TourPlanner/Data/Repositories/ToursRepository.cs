@@ -29,7 +29,13 @@ namespace TourPlanner.Data.Repositories
         {
             var tour = _context.Tours.Find(id);
             return tour;
+        }
 
+        public List<Tour> GetTourByName(string name)
+        {
+            return _context.Tours
+            .Where(t => t.name.ToLower().Contains(name.ToLower()))
+            .ToList();
         }
 
         public Tour[] GetTours()

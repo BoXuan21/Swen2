@@ -17,9 +17,9 @@ namespace TourPlaner.Models
         public float distance { get; set; }
         public int estimatedtime { get; set; }
         public string routeinformation { get; set; }
-        public string listid { get; set; }
+        public string? listid { get; set; }
 
-        public Tour(string id, string name, string description, string fromlocation, string tolocation, string transporttype, float distance, int estimatedtime, string routeinformation, string listid)
+        public Tour(string id, string name, string description, string fromlocation, string tolocation, string transporttype, float distance, int estimatedtime, string routeinformation)
         {
             this.id = id;
             this.name = name;
@@ -30,7 +30,6 @@ namespace TourPlaner.Models
             this.distance = distance;
             this.estimatedtime = estimatedtime;
             this.routeinformation = routeinformation;
-            this.listid = listid;
         }
 
     }

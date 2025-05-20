@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace TourPlanner.Services.Interfaces
 {
-    internal interface IToursService
+    public interface IToursService
     {
+        public string AddTour(string name, string description, string from, string to, string transportType);
     }
 }
