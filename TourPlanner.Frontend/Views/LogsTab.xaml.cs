@@ -8,6 +8,7 @@ using TourPlanner.Frontend.Popups;
 using System.Threading.Tasks;
 using System.Text.Json.Nodes;
 using TourPlanner.Frontend.Models;
+using System.Text.Json;
 
 namespace TourPlanner.Frontend.Views
 {
@@ -69,57 +70,107 @@ namespace TourPlanner.Frontend.Views
             {
                 Debug.WriteLine($"Loading logs for tour {tourId}");
                 var logs = await _apiClient.GetLogsByTourIdAsync(tourId);
+                Debug.WriteLine($"Received {logs?.Count ?? 0} logs from API");
+                
                 _viewModel.Logs.Clear();
-
-                foreach (var log in logs)
+                
+                if (logs != null)
                 {
-                    _viewModel.Logs.Add(new TourLog
+                    foreach (var log in logs)
                     {
-                        Id = log["id"]?.ToString() ?? string.Empty,
-                        TourId = log["tourId"]?.ToString() ?? string.Empty,
-                        Date = log["date"]?.GetValue<DateTime>() ?? DateTime.Now,
-                        Comment = log["comment"]?.ToString() ?? string.Empty,
-                        Difficulty = log["difficulty"]?.GetValue<int>() ?? 1,
-                        Rating = log["rating"]?.GetValue<int>() ?? 1,
-                        Duration = TimeSpan.FromMinutes(log["duration"]?.GetValue<double>() ?? 0)
-                    });
-                }
+                        TimeSpan duration;
+                        
+                        // Try different approaches to parse the duration
+                        if (log["duration"] != null)
+                        {
+                            if (log["duration"].GetValueKind() == JsonValueKind.Number)
+                            {
+                                // If it's a number, assume it's minutes
+                                double minutes = log["duration"].GetValue<double>();
+                                duration = TimeSpan.FromMinutes(minutes);
+                                Debug.WriteLine($"Parsed duration as minutes: {minutes} -> {duration}");
+                            }
+                            else if (log["duration"].GetValueKind() == JsonValueKind.String)
+                            {
+                                // If it's a string, try to parse as TimeSpan
+                                string durationStr = log["duration"].GetValue<string>();
+                                if (TimeSpan.TryParse(durationStr, out var parsedDuration))
+                                {
+                                    duration = parsedDuration;
+                                    Debug.WriteLine($"Parsed duration from string: {durationStr} -> {duration}");
+                                }
+                                else
+                                {
+                                    // Default to zero if parsing fails
+                                    duration = TimeSpan.Zero;
+                                    Debug.WriteLine($"Failed to parse duration string: {durationStr}, using zero");
+                                }
+                            }
+                            else
+                            {
+                                duration = TimeSpan.Zero;
+                                Debug.WriteLine($"Unknown duration format, using zero");
+                            }
+                        }
+                        else
+                        {
+                            duration = TimeSpan.Zero;
+                            Debug.WriteLine("Duration field is null, using zero");
+                        }
 
-                Debug.WriteLine($"Loaded {_viewModel.Logs.Count} logs");
+                        var tourLog = new TourLog
+                        {
+                            Id = log["id"]?.ToString() ?? string.Empty,
+                            TourId = log["tourId"]?.ToString() ?? string.Empty,
+                            Date = log["date"]?.GetValue<DateTime>() ?? DateTime.Now,
+                            Comment = log["comment"]?.ToString() ?? string.Empty,
+                            Difficulty = log["difficulty"]?.GetValue<int>() ?? 1,
+                            Rating = log["rating"]?.GetValue<int>() ?? 1,
+                            Duration = duration
+                        };
+                        
+                        _viewModel.Logs.Add(tourLog);
+                        Debug.WriteLine($"Added log: {tourLog.Id} - {tourLog.Comment} - Duration: {tourLog.Duration}");
+                    }
+                    
+                    Debug.WriteLine($"Total logs loaded: {_viewModel.Logs.Count}");
+                }
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error loading logs: {ex.Message}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                MessageBox.Show($"Error loading logs: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        private void OnRequestOpenAddLogPopup()
+        private async void OnRequestOpenAddLogPopup()
         {
             var popup = new Popups.AddLogPopup(_viewModel.SelectedTour!);
             if (popup.ShowDialog() == true)
             {
-                LoadLogsAsync(_viewModel.SelectedTour!.Id);
+                await LoadLogsAsync(_viewModel.SelectedTour!.Id);
             }
         }
 
-        private void OnRequestOpenEditLogPopup(TourLogViewModel log)
+        private async void OnRequestOpenEditLogPopup(TourLog log)
         {
             var popup = new Popups.EditLogPopup(log);
             if (popup.ShowDialog() == true)
             {
-                LoadLogsAsync(log.TourId);
+                await LoadLogsAsync(log.TourId);
             }
         }
 
-        private async void OnRequestOpenDeleteLogPopup(TourLogViewModel log)
+        private async void OnRequestOpenDeleteLogPopup(TourLog log)
         {
-            var result = System.Windows.MessageBox.Show(
+            var result = MessageBox.Show(
                 "Are you sure you want to delete this log?",
                 "Confirm Delete",
-                System.Windows.MessageBoxButton.YesNo,
-                System.Windows.MessageBoxImage.Question);
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
 
-            if (result == System.Windows.MessageBoxResult.Yes)
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
@@ -129,20 +180,27 @@ namespace TourPlanner.Frontend.Views
                 catch (Exception ex)
                 {
                     Debug.WriteLine($"Error deleting log: {ex.Message}");
-                    System.Windows.MessageBox.Show(
+                    MessageBox.Show(
                         $"Error deleting log: {ex.Message}",
                         "Error",
-                        System.Windows.MessageBoxButton.OK,
-                        System.Windows.MessageBoxImage.Error);
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
                 }
             }
         }
 
         private async void TourComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Debug.WriteLine("TourComboBox_SelectionChanged called");
             if (_viewModel.SelectedTour != null)
             {
+                Debug.WriteLine($"Tour selected: {_viewModel.SelectedTour.Name} (ID: {_viewModel.SelectedTour.Id})");
                 await LoadLogsAsync(_viewModel.SelectedTour.Id);
+            }
+            else
+            {
+                Debug.WriteLine("No tour selected");
+                _viewModel.Logs.Clear();
             }
         }
     }

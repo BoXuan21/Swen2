@@ -28,7 +28,8 @@
             <ListBox Grid.Row="1" 
                      ItemsSource="{Binding AvailableTours, UpdateSourceTrigger=PropertyChanged}"
                      SelectedItem="{Binding SelectedTour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                     DisplayMemberPath="Name"/>
+                     DisplayMemberPath="Name"
+                     SelectionChanged="TourComboBox_SelectionChanged"/>
         </Grid>
 
         <!-- Logs Section -->

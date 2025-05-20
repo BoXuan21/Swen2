@@ -4,6 +4,7 @@ using TourPlanner.Frontend.ViewModels;
 using TourPlanner.Frontend.Services;
 using System.Diagnostics;
 using System.ComponentModel;
+using TourPlanner.Frontend.Models;
 
 namespace TourPlanner.Frontend.Popups
 {
@@ -12,7 +13,7 @@ namespace TourPlanner.Frontend.Popups
         private readonly EditLogViewModel _viewModel;
         private readonly TourApiClient _apiClient;
 
-        public EditLogPopup(TourLogViewModel log)
+        public EditLogPopup(TourLog log)
         {
             InitializeComponent();
             _apiClient = new TourApiClient();
@@ -22,8 +23,8 @@ namespace TourPlanner.Frontend.Popups
                 TourId = log.TourId,
                 Date = log.Date,
                 Comment = log.Comment,
-                Difficulty = log.Difficulty,
-                Rating = log.Rating,
+                Difficulty = log.Difficulty - 1,
+                Rating = log.Rating - 1,
                 Hours = log.Duration.Hours,
                 Minutes = log.Duration.Minutes
             };
@@ -53,8 +54,8 @@ namespace TourPlanner.Frontend.Popups
                     _viewModel.TourId,
                     _viewModel.Date,
                     _viewModel.Comment,
-                    _viewModel.Difficulty,
-                    _viewModel.Rating,
+                    _viewModel.Difficulty + 1,
+                    _viewModel.Rating + 1,
                     duration
                 );
 

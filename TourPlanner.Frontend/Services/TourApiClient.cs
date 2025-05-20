@@ -111,8 +111,32 @@ namespace TourPlanner.Frontend.Services
             await DeleteAsync($"Tour/{id}");
 
         // Log endpoints
-        public async Task<JsonArray> GetLogsByTourIdAsync(string tourId) => 
-            await GetAsync<JsonArray>($"TourLog/tour/{tourId}");
+        public async Task<JsonArray> GetLogsByTourIdAsync(string tourId)
+        {
+            try
+            {
+                Debug.WriteLine($"Getting logs for tour {tourId} from {_baseUrl}/TourLog/tour/{tourId}");
+                var response = await _httpClient.GetAsync($"{_baseUrl}/TourLog/tour/{tourId}");
+                
+                if (!response.IsSuccessStatusCode)
+                {
+                    string errorContent = await response.Content.ReadAsStringAsync();
+                    Debug.WriteLine($"Server error: {response.StatusCode}, Content: {errorContent}");
+                    throw new HttpRequestException($"Server returned {response.StatusCode}: {errorContent}");
+                }
+                
+                response.EnsureSuccessStatusCode();
+                var logs = await response.Content.ReadFromJsonAsync<JsonArray>(_jsonOptions);
+                Debug.WriteLine($"Received {logs?.Count ?? 0} logs from API");
+                return logs ?? new JsonArray();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error getting logs: {ex.Message}");
+                Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+                throw;
+            }
+        }
 
         public async Task<JsonObject> CreateLogAsync(string tourId, string comment, int difficulty, int rating, TimeSpan duration)
         {
