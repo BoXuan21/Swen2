@@ -32,7 +32,7 @@ namespace TourPlanner.Data
 
             modelBuilder.Entity<TourLog>()
                 .HasOne(l => l.Tour)
-                .WithMany(t => t.Logs)
+                .WithMany()
                 .HasForeignKey(l => l.TourId)
                 .OnDelete(DeleteBehavior.Cascade);
 

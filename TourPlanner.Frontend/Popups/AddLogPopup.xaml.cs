@@ -12,24 +12,21 @@ namespace TourPlanner.Frontend.Popups
 {
     public partial class AddLogPopup : Window
     {
-        private readonly AddLogViewModel _viewModel;
+        private readonly AddLogPopupViewModel _viewModel;
         private readonly TourApiClient _apiClient;
 
         public AddLogPopup(TourViewModel selectedTour)
         {
             InitializeComponent();
             _apiClient = new TourApiClient();
-            _viewModel = new AddLogViewModel
-            {
-                TourId = selectedTour.Id,
-                Date = DateTime.Now,
-                Difficulty = 1,
-                Rating = 1
-            };
+            _viewModel = new AddLogPopupViewModel(selectedTour.Id);
+            _viewModel.RequestClose += () => this.Close();
             DataContext = _viewModel;
         }
 
-        private async void OnSave(object sender, RoutedEventArgs e)
+        public AddLogPopupViewModel ViewModel => (AddLogPopupViewModel)DataContext;
+
+        /*private async void OnSave(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -74,90 +71,91 @@ namespace TourPlanner.Frontend.Popups
             DialogResult = false;
             Close();
         }
-    }
+    }*/
 
-    public class AddLogViewModel : INotifyPropertyChanged
-    {
-        private string _tourId = string.Empty;
-        private DateTime _date;
-        private string _comment = string.Empty;
-        private int _difficulty;
-        private int _rating;
-        private int _hours;
-        private int _minutes;
-
-        public string TourId
+        public class AddLogViewModel : INotifyPropertyChanged
         {
-            get => _tourId;
-            set
-            {
-                _tourId = value;
-                OnPropertyChanged(nameof(TourId));
-            }
-        }
+            private string _tourId = string.Empty;
+            private DateTime _date;
+            private string _comment = string.Empty;
+            private int _difficulty;
+            private int _rating;
+            private int _hours;
+            private int _minutes;
 
-        public DateTime Date
-        {
-            get => _date;
-            set
+            public string TourId
             {
-                _date = value;
-                OnPropertyChanged(nameof(Date));
+                get => _tourId;
+                set
+                {
+                    _tourId = value;
+                    OnPropertyChanged(nameof(TourId));
+                }
             }
-        }
 
-        public string Comment
-        {
-            get => _comment;
-            set
+            public DateTime Date
             {
-                _comment = value;
-                OnPropertyChanged(nameof(Comment));
+                get => _date;
+                set
+                {
+                    _date = value;
+                    OnPropertyChanged(nameof(Date));
+                }
             }
-        }
 
-        public int Difficulty
-        {
-            get => _difficulty;
-            set
+            public string Comment
             {
-                _difficulty = value;
-                OnPropertyChanged(nameof(Difficulty));
+                get => _comment;
+                set
+                {
+                    _comment = value;
+                    OnPropertyChanged(nameof(Comment));
+                }
             }
-        }
 
-        public int Rating
-        {
-            get => _rating;
-            set
+            public int Difficulty
             {
-                _rating = value;
-                OnPropertyChanged(nameof(Rating));
+                get => _difficulty;
+                set
+                {
+                    _difficulty = value;
+                    OnPropertyChanged(nameof(Difficulty));
+                }
             }
-        }
 
-        public int Hours
-        {
-            get => _hours;
-            set
+            public int Rating
             {
-                _hours = value;
-                OnPropertyChanged(nameof(Hours));
+                get => _rating;
+                set
+                {
+                    _rating = value;
+                    OnPropertyChanged(nameof(Rating));
+                }
             }
-        }
 
-        public int Minutes
-        {
-            get => _minutes;
-            set
+            public int Hours
             {
-                _minutes = value;
-                OnPropertyChanged(nameof(Minutes));
+                get => _hours;
+                set
+                {
+                    _hours = value;
+                    OnPropertyChanged(nameof(Hours));
+                }
             }
-        }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            public int Minutes
+            {
+                get => _minutes;
+                set
+                {
+                    _minutes = value;
+                    OnPropertyChanged(nameof(Minutes));
+                }
+            }
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            protected void OnPropertyChanged(string propertyName) =>
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 } 

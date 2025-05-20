@@ -16,7 +16,6 @@ namespace TourPlanner.Data.Repositories
         {
             return await _context.Tours
                 .Include(t => t.List)
-                .Include(t => t.Logs)
                 .ToListAsync();
         }
 
@@ -24,7 +23,6 @@ namespace TourPlanner.Data.Repositories
         {
             return await _context.Tours
                 .Include(t => t.List)
-                .Include(t => t.Logs)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
 
@@ -56,7 +54,6 @@ namespace TourPlanner.Data.Repositories
         {
             return await _context.Tours
                 .Include(t => t.List)
-                .Include(t => t.Logs)
                 .Where(t => t.ListId == listId)
                 .ToListAsync();
         }

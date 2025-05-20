@@ -38,12 +38,9 @@ namespace TourPlanner.Models
         [ForeignKey("ListId")]
         public List? List { get; set; }
         
-        public ICollection<TourLog>? Logs { get; set; }
-        
         public Tour()
         {
             Id = Guid.NewGuid().ToString();
-            Logs = new List<TourLog>();
         }
     }
 }

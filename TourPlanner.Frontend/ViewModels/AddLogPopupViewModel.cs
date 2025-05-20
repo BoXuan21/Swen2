@@ -68,7 +68,7 @@ namespace TourPlanner.Frontend.ViewModels
 
         public string TourId { get; }
 
-        public ICommand AddCommand { get; }
+        public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
 
         public event Action? RequestClose;
@@ -77,7 +77,7 @@ namespace TourPlanner.Frontend.ViewModels
         {
             _tourApiClient = new TourApiClient();
             TourId = tourId;
-            AddCommand = new RelayCommand(OnAdd);
+            SaveCommand = new RelayCommand(OnAdd);
             CancelCommand = new RelayCommand(OnCancel);
         }
 

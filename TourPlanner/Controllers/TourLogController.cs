@@ -79,6 +79,7 @@ namespace TourPlanner.Controllers
                 }
 
                 _logger.LogInformation("Creating new log for tour: {TourId}", log.TourId);
+                _logger.LogInformation("test here");
                 var createdLog = await _logsRepository.CreateLogAsync(log);
                 return CreatedAtAction(nameof(GetLogById), new { id = createdLog.Id }, createdLog);
             }
@@ -148,12 +149,21 @@ namespace TourPlanner.Controllers
             {
                 _logger.LogInformation("Getting all logs");
                 // Get all tours to access their logs
-                var tours = await _context.Tours
-                    .Include(t => t.Logs)
-                    .ToListAsync();
-                    
-                // Collect all logs from all tours
-                var allLogs = tours.SelectMany(t => t.Logs).ToList();
+                var allLogs = await (
+                    from log in _context.Logs
+                    join tour in _context.Tours on log.TourId equals tour.Id
+                    select new
+                    {
+                        LogId = log.Id,
+                        log.Comment,
+                        log.Date,
+                        log.Difficulty,
+                        log.Rating,
+                        log.Duration,
+                        TourId = tour.Id,
+                        TourName = tour.Name
+                    }
+                ).ToListAsync();
                 
                 return Ok(allLogs);
             }

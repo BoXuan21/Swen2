@@ -7,6 +7,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TourPlanner.Frontend.Services
 {
@@ -118,7 +119,7 @@ namespace TourPlanner.Frontend.Services
             var log = new
             {
                 Id = Guid.NewGuid().ToString(),
-                Date = DateTime.Now,
+                Date = DateTime.SpecifyKind(DateTime.Now, DateTimeKind.Utc),
                 Comment = comment,
                 Difficulty = difficulty,
                 Rating = rating,

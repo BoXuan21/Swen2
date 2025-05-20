@@ -7,6 +7,7 @@ using TourPlanner.Frontend.Services;
 using TourPlanner.Frontend.Popups;
 using System.Threading.Tasks;
 using System.Text.Json.Nodes;
+using TourPlanner.Frontend.Models;
 
 namespace TourPlanner.Frontend.Views
 {
@@ -72,7 +73,7 @@ namespace TourPlanner.Frontend.Views
 
                 foreach (var log in logs)
                 {
-                    _viewModel.Logs.Add(new TourLogViewModel
+                    _viewModel.Logs.Add(new TourLog
                     {
                         Id = log["id"]?.ToString() ?? string.Empty,
                         TourId = log["tourId"]?.ToString() ?? string.Empty,

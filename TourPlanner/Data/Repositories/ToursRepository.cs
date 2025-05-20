@@ -35,7 +35,6 @@ namespace TourPlanner.Data.Repositories
         public Tour GetTourById(string id)
         {
             return _context.Tours
-                .Include(t => t.Logs)
                 .Include(t => t.List)
                 .FirstOrDefault(t => t.Id == id);
         }
@@ -43,7 +42,6 @@ namespace TourPlanner.Data.Repositories
         public Tour[] GetTours()
         {
             return _context.Tours
-                .Include(t => t.Logs)
                 .Include(t => t.List)
                 .ToArray();
         }

@@ -4,17 +4,18 @@ using System.ComponentModel;
 using System.Windows.Input;
 using TourPlanner.Frontend.Utils;
 using System.Diagnostics;
+using TourPlanner.Frontend.Models;
 
 namespace TourPlanner.Frontend.ViewModels
 {
     public class LogsViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<TourLogViewModel> _logs;
+        private ObservableCollection<TourLog> _logs;
         private ObservableCollection<TourViewModel> _availableTours;
         private TourViewModel? _selectedTour;
         private TourLogViewModel? _selectedLog;
 
-        public ObservableCollection<TourLogViewModel> Logs
+        public ObservableCollection<TourLog> Logs
         {
             get => _logs;
             set
@@ -67,7 +68,7 @@ namespace TourPlanner.Frontend.ViewModels
 
         public LogsViewModel()
         {
-            Logs = new ObservableCollection<TourLogViewModel>();
+            Logs = new ObservableCollection<TourLog>();
             AvailableTours = new ObservableCollection<TourViewModel>();
             AddLogCommand = new RelayCommand(OnAddLog, CanAddLog);
             EditLogCommand = new RelayCommand(OnEditLog, CanEditLog);
