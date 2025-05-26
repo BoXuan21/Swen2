@@ -3,34 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TourPlaner.Models
+namespace TourPlanner.Models
 {
     public class Tour
     {
-        public string id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public string fromlocation { get; set; }
-        public string tolocation { get; set; }
-        public string transporttype { get; set; }
-        public float distance { get; set; }
-        public int estimatedtime { get; set; }
-        public string routeinformation { get; set; }
-        public string? listid { get; set; }
-
-        public Tour(string id, string name, string description, string fromlocation, string tolocation, string transporttype, float distance, int estimatedtime, string routeinformation)
+        [Key]
+        public string Id { get; set; }
+        
+        [Required]
+        public string Name { get; set; }
+        
+        public string Description { get; set; }
+        
+        [Required]
+        public string FromLocation { get; set; }
+        
+        [Required]
+        public string ToLocation { get; set; }
+        
+        [Required]
+        public string TransportType { get; set; }
+        
+        public float Distance { get; set; }
+        
+        public int EstimatedTime { get; set; }
+        
+        public string RouteInformation { get; set; }
+        
+        public string? ListId { get; set; }
+        
+        [ForeignKey("ListId")]
+        public List? List { get; set; }
+        
+        public Tour()
         {
-            this.id = id;
-            this.name = name;
-            this.description = description;
-            this.fromlocation = fromlocation;
-            this.tolocation = tolocation;
-            this.transporttype = transporttype;
-            this.distance = distance;
-            this.estimatedtime = estimatedtime;
-            this.routeinformation = routeinformation;
+            Id = Guid.NewGuid().ToString();
         }
-
     }
 }

@@ -9,140 +9,158 @@
              mc:Ignorable="d" 
              d:DesignHeight="650" d:DesignWidth="1000">
     <Grid>
-        <!-- Column definitions for the main layout:
-             - Left panel (2*): Tour list with minimum width of 200px
-             - Middle (5px): Space for the GridSplitter
-             - Right panel (5*): Details panel with minimum width of 400px -->
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*" MinWidth="200"/>
-            <ColumnDefinition Width="5" />
-            <ColumnDefinition Width="5*" MinWidth="400"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Grid Grid.Row="0">
+            <!-- Column definitions for the main layout:
+                 - Left panel (2*): Tour list with minimum width of 200px
+                 - Middle (5px): Space for the GridSplitter
+                 - Right panel (5*): Details panel with minimum width of 400px -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" MinWidth="200"/>
+                <ColumnDefinition Width="5" />
+                <ColumnDefinition Width="5*" MinWidth="400"/>
+            </Grid.ColumnDefinitions>
 
-        <!-- Left Panel - Tour List -->
-        <DockPanel Grid.Column="0" Background="#F5F5F5" Margin="10,10,5,10">
-            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
-                <Button x:Name="CreateButton" Content="Create" Command="{Binding OpenCreatePopupCommand}" Width="60" Margin="2" />
-                <Button x:Name="DeleteButton" Content="Delete" Command="{Binding OpenDeletePopupCommand}" Width="60" Margin="2" />
-                <Button x:Name="ModifyButton" Content="Modify" Command="{Binding OpenModifyPopupCommand}" Width="60" Margin="2" />
-            </StackPanel>
-            <!-- ScrollViewer for the tour list: Enables vertical scrolling when content exceeds the available space -->
-            <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Bottom">
-                <ListBox x:Name="TourList" 
-                        Background="White" 
-                        BorderThickness="1" 
-                        BorderBrush="#DDDDDD"
-                        Margin="10"
-                        SelectedItem="{Binding SelectedTourName}">
-                    <ListBoxItem Content="Sample Tour 1"/>
-                    <ListBoxItem Content="Sample Tour 2"/>
-                </ListBox>
-            </ScrollViewer>
-        </DockPanel>
+            <!-- Left Panel - Tour List -->
+            <DockPanel Grid.Column="0" Background="#F5F5F5" Margin="10,10,5,10">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+                    <Button x:Name="CreateButton" Content="Create" Command="{Binding OpenCreatePopupCommand}" Width="60" Margin="2" />
+                    <Button x:Name="DeleteButton" Content="Delete" Command="{Binding OpenDeletePopupCommand}" Width="60" Margin="2" />
+                    <Button x:Name="ModifyButton" Content="Modify" Command="{Binding OpenModifyPopupCommand}" Width="60" Margin="2" />
+                </StackPanel>
+                <!-- ScrollViewer for the tour list: Enables vertical scrolling when content exceeds the available space -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" DockPanel.Dock="Bottom">
+                    <ListBox x:Name="TourList" 
+                            Background="White" 
+                            BorderThickness="1" 
+                            BorderBrush="#DDDDDD"
+                            Margin="10"
+                            SelectionMode="Single"
+                            ItemsSource="{Binding TourNames}"
+                            SelectedItem="{Binding SelectedTourName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </ScrollViewer>
+            </DockPanel>
 
-        <!-- GridSplitter: Allows users to resize the panels by dragging
-             - Width="5": Creates a visible dragging area
-             - HorizontalAlignment="Stretch": Ensures the splitter spans the full height
-             - Background="#DDDDDD": Makes the splitter visible with a gray color -->
-        <GridSplitter Grid.Column="1" 
-                      Width="5" 
-                      HorizontalAlignment="Stretch" 
-                      VerticalAlignment="Stretch"
-                      Background="#DDDDDD"/>
+            <!-- GridSplitter: Allows users to resize the panels by dragging
+                 - Width="5": Creates a visible dragging area
+                 - HorizontalAlignment="Stretch": Ensures the splitter spans the full height
+                 - Background="#DDDDDD": Makes the splitter visible with a gray color -->
+            <GridSplitter Grid.Column="1" 
+                          Width="5" 
+                          HorizontalAlignment="Stretch" 
+                          VerticalAlignment="Stretch"
+                          Background="#DDDDDD"/>
 
-        <!-- Right Panel - Tour Details -->
-        <DockPanel Grid.Column="2" Background="White" Margin="5,10,10,10">
-            <TabControl>
-                <!-- General Tab -->
-                <TabItem Header="General">
-                    <!-- ScrollViewer for the details panel: Enables both vertical and horizontal scrolling
-                         when content exceeds the available space -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                        <StackPanel Margin="10">
-                            <!-- Tour Basic Info -->
-                            <GroupBox Header="Tour Information" Margin="0,0,0,10">
-                                <Grid Margin="5">
-                                    <!-- Column definitions for the form layout:
-                                         - Labels: Auto width with minimum 100px to prevent squishing
-                                         - Content: Takes remaining space -->
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" MinWidth="100"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-
-                                    <TextBlock Text="Name:" Grid.Row="0" Grid.Column="0" Margin="5"/>
-                                    <TextBlock Text="Sample Tour" Grid.Row="0" Grid.Column="1" Margin="5"/>
-
-                                    <TextBlock Text="Description:" Grid.Row="1" Grid.Column="0" Margin="5"/>
-                                    <TextBlock Text="Sample tour description" Grid.Row="1" Grid.Column="1" Margin="5" TextWrapping="Wrap"/>
-
-                                    <TextBlock Text="From:" Grid.Row="2" Grid.Column="0" Margin="5"/>
-                                    <TextBlock Text="Starting Point" Grid.Row="2" Grid.Column="1" Margin="5"/>
-
-                                    <TextBlock Text="To:" Grid.Row="3" Grid.Column="0" Margin="5"/>
-                                    <TextBlock Text="Destination" Grid.Row="3" Grid.Column="1" Margin="5"/>
-
-                                    <TextBlock Text="Transport Type:" Grid.Row="4" Grid.Column="0" Margin="5"/>
-                                    <TextBlock Text="Car" Grid.Row="4" Grid.Column="1" Margin="5"/>
-
-                                    <TextBlock Text="Distance:" Grid.Row="5" Grid.Column="0" Margin="5"/>
-                                    <TextBlock Text="10 km" Grid.Row="5" Grid.Column="1" Margin="5"/>
-                                </Grid>
-                            </GroupBox>
-
-                            <!-- Route Information -->
-                            <GroupBox Header="Route Information" Margin="0,0,0,10">
-                                <!-- MinHeight instead of fixed Height allows the map to grow with window size -->
-                                <Border MinHeight="200" Background="#F5F5F5" Margin="5">
-                                    <TextBlock Text="Route Map will be displayed here" 
-                                             HorizontalAlignment="Center" 
-                                             VerticalAlignment="Center"/>
-                                </Border>
-                            </GroupBox>
-
-                            <!-- Associated Lists -->
-                            <GroupBox Header="Associated Lists" Margin="0,0,0,10">
-                                <!-- ScrollViewer with MaxHeight: Prevents the list from growing too large
-                                     while still allowing scrolling through content -->
-                                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200">
-                                    <ListBox Margin="5">
-                                        <ListBoxItem Content="List 1"/>
-                                        <ListBoxItem Content="List 2"/>
-                                    </ListBox>
-                                </ScrollViewer>
-                            </GroupBox>
-                        </StackPanel>
-                    </ScrollViewer>
-                </TabItem>
-
-                <!-- Logs Tab -->
-                <TabItem Header="Logs">
-                    <DockPanel>
-                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
-                            <Button Content="Add Log" Margin="0,0,5,0"/>
-                            <Button Content="Edit Log" Margin="0,0,5,0"/>
-                            <Button Content="Delete Log" Margin="0,0,5,0"/>
-                        </StackPanel>
-                        <!-- ScrollViewer for logs: Enables both vertical and horizontal scrolling
-                             when the log list grows beyond the available space -->
+            <!-- Right Panel - Tour Details -->
+            <DockPanel Grid.Column="2" Background="White" Margin="5,10,10,10">
+                <TabControl>
+                    <!-- General Tab -->
+                    <TabItem Header="General">
+                        <!-- ScrollViewer for the details panel: Enables both vertical and horizontal scrolling
+                             when content exceeds the available space -->
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                            <ListBox Margin="10">
-                                <ListBoxItem Content="Log Entry 1"/>
-                                <ListBoxItem Content="Log Entry 2"/>
-                                <ListBoxItem Content="Log Entry 3"/>
-                            </ListBox>
+                            <StackPanel Margin="10">
+                                <!-- Tour Basic Info -->
+                                <GroupBox Header="Tour Information" Margin="0,0,0,10">
+                                    <Grid Margin="5">
+                                        <!-- Column definitions for the form layout:
+                                             - Labels: Auto width with minimum 100px to prevent squishing
+                                             - Content: Takes remaining space -->
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" MinWidth="100"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Text="Name:" Grid.Row="0" Grid.Column="0" Margin="5"/>
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="5" Text="{Binding SelectedTourName}"/>
+
+                                        <TextBlock Text="Description:" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                                        <TextBlock Grid.Row="1" Grid.Column="1" Margin="5" Text="{Binding SelectedTourDescription}" TextWrapping="Wrap"/>
+
+                                        <TextBlock Text="From:" Grid.Row="2" Grid.Column="0" Margin="5"/>
+                                        <TextBlock Grid.Row="2" Grid.Column="1" Margin="5" Text="{Binding SelectedTourFrom}"/>
+
+                                        <TextBlock Text="To:" Grid.Row="3" Grid.Column="0" Margin="5"/>
+                                        <TextBlock Grid.Row="3" Grid.Column="1" Margin="5" Text="{Binding SelectedTourTo}"/>
+
+                                        <TextBlock Text="Transport Type:" Grid.Row="4" Grid.Column="0" Margin="5"/>
+                                        <TextBlock Grid.Row="4" Grid.Column="1" Margin="5" Text="{Binding SelectedTourTransportType}"/>
+
+                                        <TextBlock Text="Distance:" Grid.Row="5" Grid.Column="0" Margin="5"/>
+                                        <TextBlock Grid.Row="5" Grid.Column="1" Margin="5" Text="{Binding SelectedTourDistance}"/>
+                                    </Grid>
+                                </GroupBox>
+
+                                <!-- Route Information -->
+                                <GroupBox Header="Route Information" Margin="0,0,0,10">
+                                    <!-- MinHeight instead of fixed Height allows the map to grow with window size -->
+                                    <Border MinHeight="200" Background="#F5F5F5" Margin="5">
+                                        <TextBlock Text="Route Map will be displayed here" 
+                                                 HorizontalAlignment="Center" 
+                                                 VerticalAlignment="Center"/>
+                                    </Border>
+                                </GroupBox>
+
+                                <!-- Associated Lists -->
+                                <GroupBox Header="Associated Lists" Margin="0,0,0,10">
+                                    <!-- ScrollViewer with MaxHeight: Prevents the list from growing too large
+                                         while still allowing scrolling through content -->
+                                    <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="200">
+                                        <ListBox Margin="5">
+                                        </ListBox>
+                                    </ScrollViewer>
+                                </GroupBox>
+                            </StackPanel>
                         </ScrollViewer>
-                    </DockPanel>
-                </TabItem>
-            </TabControl>
-        </DockPanel>
+                    </TabItem>
+
+                    <!-- Logs Tab -->
+                    <TabItem Header="Logs">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
+                                <Button Content="Add Log" Margin="0,0,5,0"/>
+                                <Button Content="Edit Log" Margin="0,0,5,0"/>
+                                <Button Content="Delete Log" Margin="0,0,5,0"/>
+                            </StackPanel>
+                            <!-- ScrollViewer for logs: Enables both vertical and horizontal scrolling
+                                 when the log list grows beyond the available space -->
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                                <ListBox Margin="10">
+                                    <ListBoxItem Content="Log Entry 1"/>
+                                    <ListBoxItem Content="Log Entry 2"/>
+                                    <ListBoxItem Content="Log Entry 3"/>
+                                </ListBox>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </TabItem>
+                </TabControl>
+            </DockPanel>
+        </Grid>
+        
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="1" Height="22">
+            <StatusBarItem>
+                <TextBlock x:Name="ConnectionStatus" Text="Loading..." />
+            </StatusBarItem>
+            <Separator />
+            <StatusBarItem>
+                <TextBlock x:Name="ApiUrlDisplay" Text="API URL: Not configured" />
+            </StatusBarItem>
+            <StatusBarItem>
+                <Button x:Name="RefreshButton" Content="Refresh" Height="18" Padding="5,0" Click="RefreshButton_Click" />
+            </StatusBarItem>
+        </StatusBar>
     </Grid>
 </UserControl>

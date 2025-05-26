@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Windows.Input;
 using TourPlanner.Frontend.Utils;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace TourPlanner.Frontend.ViewModels
 {
-    public class ToursTabViewModel
+    public class ToursTabViewModel : INotifyPropertyChanged
     {
         public ICommand OpenCreatePopupCommand { get; }
         public ICommand OpenDeletePopupCommand { get; }
@@ -21,10 +23,52 @@ namespace TourPlanner.Frontend.ViewModels
             set
             {
                 _selectedTourName = value;
+                OnPropertyChanged(nameof(SelectedTourName));
                 ((RelayCommand)OpenDeletePopupCommand).RaiseCanExecuteChanged();
                 ((RelayCommand)OpenModifyPopupCommand).RaiseCanExecuteChanged();
             }
         }
+
+        private string? _selectedTourDescription;
+        public string? SelectedTourDescription
+        {
+            get => _selectedTourDescription;
+            set { _selectedTourDescription = value; OnPropertyChanged(nameof(SelectedTourDescription)); }
+        }
+
+        private string? _selectedTourFrom;
+        public string? SelectedTourFrom
+        {
+            get => _selectedTourFrom;
+            set { _selectedTourFrom = value; OnPropertyChanged(nameof(SelectedTourFrom)); }
+        }
+
+        private string? _selectedTourTo;
+        public string? SelectedTourTo
+        {
+            get => _selectedTourTo;
+            set { _selectedTourTo = value; OnPropertyChanged(nameof(SelectedTourTo)); }
+        }
+
+        private string? _selectedTourTransportType;
+        public string? SelectedTourTransportType
+        {
+            get => _selectedTourTransportType;
+            set { _selectedTourTransportType = value; OnPropertyChanged(nameof(SelectedTourTransportType)); }
+        }
+
+        private string? _selectedTourDistance;
+        public string? SelectedTourDistance
+        {
+            get => _selectedTourDistance;
+            set { _selectedTourDistance = value; OnPropertyChanged(nameof(SelectedTourDistance)); }
+        }
+
+        public ObservableCollection<string> TourNames { get; } = new ObservableCollection<string>();
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public ToursTabViewModel()
         {

@@ -1,32 +1,66 @@
-﻿using TourPlaner.Models;
+﻿using TourPlanner.Models;
 using TourPlanner.Data;
 using TourPlanner.Data.Repositories;
-using TourPlanner.Services;
-using TourPlanner.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace TourPlanner.Test.RepositoryTests
 {
     public class ToursTest
     {
         [Fact]
-        public void TourCreatedTest()
+        public async Task TourCreatedAndStoredTest()
         {
-            string id = Guid.NewGuid().ToString();
-            string name = "TestName";
-            string description = "TestDescription";
-            string from = "Korneuburg";
-            string to = "Vienna";
-            string transportType = "Car";
-            float distance = 16.0f;
-            int estimatedTime = 200;
-            string routeInformation = "testPic";
-            Tour newTour = new Tour(id, name, description, from, to, transportType, distance, estimatedTime, routeInformation);
+            // Arrange
+            var options = new DbContextOptionsBuilder<TourPlannerContext>()
+                .UseNpgsql("Host=localhost;Database=swen2;Username=postgres;Password=postgres;Include Error Detail=true;")
+                .Options;
 
-            IToursRepository tourRepo = new ToursRepository(new TourPlannerDbContext());
+            using var context = new TourPlannerContext(options);
+            var tourRepo = new TourRepository(context);
 
-            tourRepo.CreateTour(newTour);
+            // Create a new tour
+            var newTour = new Tour
+            {
+                Name = "TestName",
+                Description = "TestDescription",
+                FromLocation = "Korneuburg",
+                ToLocation = "Vienna",
+                TransportType = "Car",
+                Distance = 16.0f,
+                EstimatedTime = 200,
+                RouteInformation = "testPic"
+            };
 
-            Assert.Equal(newTour, tourRepo.GetTourById(id));
+            // Act
+            var createdTour = await tourRepo.CreateAsync(newTour);
+
+            // Verify using direct database connection
+            using (var connection = new NpgsqlConnection("Host=localhost;Database=swen2;Username=postgres;Password=postgres;Include Error Detail=true;"))
+            {
+                await connection.OpenAsync();
+                
+                // Check if tour exists in database
+                using var command = new NpgsqlCommand(
+                    @"SELECT * FROM ""Tours"" WHERE ""Id"" = @id", connection);
+                command.Parameters.AddWithValue("@id", createdTour.Id);
+                
+                using var reader = await command.ExecuteReaderAsync();
+                
+                // Assert
+                Assert.True(await reader.ReadAsync(), "Tour should exist in database");
+                Assert.Equal(newTour.Name, reader["Name"]);
+                Assert.Equal(newTour.Description, reader["Description"]);
+                Assert.Equal(newTour.FromLocation, reader["FromLocation"]);
+                Assert.Equal(newTour.ToLocation, reader["ToLocation"]);
+                Assert.Equal(newTour.TransportType, reader["TransportType"]);
+                Assert.Equal(newTour.Distance, (float)reader["Distance"]);
+                Assert.Equal(newTour.EstimatedTime, (int)reader["EstimatedTime"]);
+                Assert.Equal(newTour.RouteInformation, reader["RouteInformation"]);
+            }
+
+            // Cleanup - delete the test tour
+            await tourRepo.DeleteAsync(createdTour.Id);
         }
 
         [Fact]

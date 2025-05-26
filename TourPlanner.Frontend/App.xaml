@@ -43,20 +43,6 @@
             </Setter>
         </Style>
 
-        <!-- Form Field Template -->
-        <ControlTemplate x:Key="FormFieldTemplate" TargetType="Grid">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="100"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{TemplateBinding Tag}" 
-                          VerticalAlignment="Center"
-                          Margin="0,0,10,0"/>
-                <ContentPresenter Grid.Column="1"/>
-            </Grid>
-        </ControlTemplate>
-
         <!-- Button Styles -->
         <Style x:Key="BaseButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="30"/>

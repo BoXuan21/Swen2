@@ -4,17 +4,94 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TourPlanner.Frontend.Views"
+             xmlns:vm="clr-namespace:TourPlanner.Frontend.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="10" Background="#CCC">
-        <DataGrid>
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Date" />
-                <DataGridTextColumn Header="Title" />
-                <DataGridTextColumn Header="Total Distance" />
-                <DataGridTextColumn Header="Total Time" />
-                <DataGridTextColumn Header="Rating" />
-            </DataGrid.Columns>
-        </DataGrid>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Tours List -->
+        <Grid Grid.Column="0" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Tours" 
+                       FontSize="18" 
+                       FontWeight="Bold" 
+                       Margin="0,0,0,10"/>
+
+            <ListBox Grid.Row="1" 
+                     ItemsSource="{Binding AvailableTours, UpdateSourceTrigger=PropertyChanged}"
+                     SelectedItem="{Binding SelectedTour, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     DisplayMemberPath="Name"
+                     SelectionChanged="TourComboBox_SelectionChanged"/>
+        </Grid>
+
+        <!-- Logs Section -->
+        <Grid Grid.Column="1" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" 
+                        Orientation="Horizontal" 
+                        Margin="0,0,0,10">
+                <TextBlock Text="Logs" 
+                           FontSize="18" 
+                           FontWeight="Bold" 
+                           VerticalAlignment="Center"/>
+                <Button Content="Add Log" 
+                        Command="{Binding AddLogCommand}"
+                        Style="{StaticResource BaseButtonStyle}"
+                        Margin="10,0,0,0"/>
+            </StackPanel>
+
+            <DataGrid Grid.Row="1" 
+                      ItemsSource="{Binding Logs, UpdateSourceTrigger=PropertyChanged}"
+                      SelectedItem="{Binding SelectedLog, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      CanUserSortColumns="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Date" 
+                                      Binding="{Binding Date, StringFormat=dd.MM.yyyy, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Comment" 
+                                      Binding="{Binding Comment, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Difficulty" 
+                                      Binding="{Binding Difficulty, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Rating" 
+                                      Binding="{Binding Rating, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTextColumn Header="Duration" 
+                                      Binding="{Binding Duration, StringFormat=hh\\:mm, UpdateSourceTrigger=PropertyChanged}"/>
+                    <DataGridTemplateColumn Header="Actions">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="Edit" 
+                                            Command="{Binding DataContext.EditLogCommand, 
+                                                      RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            Style="{StaticResource BaseButtonStyle}"
+                                            Margin="0,0,5,0"/>
+                                    <Button Content="Delete" 
+                                            Command="{Binding DataContext.DeleteLogCommand, 
+                                                      RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            Style="{StaticResource DangerButtonStyle}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
     </Grid>
 </UserControl>

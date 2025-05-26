@@ -8,15 +8,16 @@ using TourPlaner.Models;
 using TourPlanner.Data;
 using TourPlanner.Data.Repositories;
 using TourPlanner.Frontend.Utils;
-using TourPlanner.Services;
-using TourPlanner.Services.Interfaces;
+using TourPlanner.Frontend.Services;
+using System.Windows;
+using System.Net.Http;
 
 namespace TourPlanner.Frontend.ViewModels
 {
     public class CreateTourPopupViewModel : INotifyPropertyChanged
     {
-        private IToursService _toursService = new ToursService(new TourPlannerDbContext());
-        private string _tourName;
+        private readonly TourApiClient _tourApiClient;
+        private string _tourName = string.Empty;
         public string TourName
         {
             get => _tourName;
@@ -27,7 +28,7 @@ namespace TourPlanner.Frontend.ViewModels
             }
         }
 
-        private string _from;
+        private string _from = string.Empty;
         public string From
         {
             get => _from;
@@ -38,7 +39,7 @@ namespace TourPlanner.Frontend.ViewModels
             }
         }
 
-        private string _to;
+        private string _to = string.Empty;
         public string To
         {
             get => _to;
@@ -49,7 +50,7 @@ namespace TourPlanner.Frontend.ViewModels
             }
         }
 
-        private string _distance;
+        private string _distance = string.Empty;
         public string Distance
         {
             get => _distance;
@@ -78,13 +79,14 @@ namespace TourPlanner.Frontend.ViewModels
 
         public CreateTourPopupViewModel()
         {
+            _tourApiClient = new TourApiClient();
             CreateCommand = new RelayCommand(OnCreate);
             CancelCommand = new RelayCommand(OnCancel);
         }
 
-        private void OnCreate()
+        private async void OnCreate()
         {
-            // Add validation and call service here if needed
+            // Validate input
             if (string.IsNullOrWhiteSpace(TourName))
             {
                 MessageBox.Show("Please enter a tour name.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -111,7 +113,15 @@ namespace TourPlanner.Frontend.ViewModels
 
             try
             {
-                _toursService.AddTour(TourName, "", From, To, TransportType);
+                // Call the API to create the tour
+                await _tourApiClient.CreateTourAsync(
+                    TourName,
+                    "", // Description can be empty
+                    From,
+                    To,
+                    TransportType,
+                    distanceValue
+                );
 
                 // Close the dialog
                 RequestClose?.Invoke();
@@ -120,29 +130,35 @@ namespace TourPlanner.Frontend.ViewModels
             {
                 MessageBox.Show($"Connection error: The tour planner server is not available or refused the connection. " +
                     $"The application will use local storage instead.\n\n" +
-                    $"Technical details: {ex.Message}",
+                    $"Technical details: {ex.Message}", 
                     "Connection Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-
+                    
                 // Try again with mock data
                 try
                 {
-                    
+                    await _tourApiClient.CreateTourAsync(
+                        TourName,
+                        "", // Description can be empty
+                        From,
+                        To,
+                        TransportType,
+                        distanceValue
+                    );
 
                     // Close the dialog
                     RequestClose?.Invoke();
                 }
                 catch (Exception innerEx)
                 {
-                    MessageBox.Show($"1An error occurred while creating the tour: {innerEx.Message}",
+                    MessageBox.Show($"An error occurred while creating the tour: {innerEx.Message}", 
                         "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"2An error occurred while creating the tour: {ex.Message}",
+                MessageBox.Show($"An error occurred while creating the tour: {ex.Message}", 
                     "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            RequestClose?.Invoke();
         }
 
         private void OnCancel() => RequestClose?.Invoke();

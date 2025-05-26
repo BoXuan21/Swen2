@@ -10,7 +10,7 @@ namespace TourPlanner.Frontend.Popups
             InitializeComponent();
 
             var vm = new CreateTourPopupViewModel();
-            // vm.RequestClose += () => this.DialogResult = true;
+            vm.RequestClose += () => this.Close();
             this.DataContext = vm;
         }
 
