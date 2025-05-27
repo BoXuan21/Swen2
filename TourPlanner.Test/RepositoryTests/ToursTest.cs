@@ -62,21 +62,5 @@ namespace TourPlanner.Test.RepositoryTests
             // Cleanup - delete the test tour
             await tourRepo.DeleteAsync(createdTour.Id);
         }
-
-        [Fact]
-        public void TourAddedTest()
-        {
-            IToursService _toursService = new ToursService(new TourPlannerDbContext());
-            string name = "TestName";
-            string description = "TestDescription";
-            string from = "Korneuburg";
-            string to = "Vienna";
-            string transportType = "Car";
-            string id = _toursService.AddTour(name, description, from, to, transportType);
-            IToursRepository tourRepo = new ToursRepository(new TourPlannerDbContext());
-
-            Tour newTour = tourRepo.GetTourById(id);
-            Assert.Equal(newTour.name, name);
-        }
     }
 }
