@@ -28,8 +28,6 @@
             <TextBlock Text="Date:" 
                        VerticalAlignment="Center" 
                        Margin="0,0,10,0"/>
-            <DatePicker Grid.Column="1" 
-                        SelectedDate="{Binding Date}"/>
         </Grid>
 
         <Grid Grid.Row="2" Margin="0,0,0,10">

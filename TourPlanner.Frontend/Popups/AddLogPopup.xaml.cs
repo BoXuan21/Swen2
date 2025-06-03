@@ -93,16 +93,6 @@ namespace TourPlanner.Frontend.Popups
                 }
             }
 
-            public DateTime Date
-            {
-                get => _date;
-                set
-                {
-                    _date = value;
-                    OnPropertyChanged(nameof(Date));
-                }
-            }
-
             public string Comment
             {
                 get => _comment;

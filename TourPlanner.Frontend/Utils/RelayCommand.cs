@@ -12,6 +12,9 @@ namespace TourPlanner.Frontend.Utils
         private readonly Action _execute;
         private readonly Func<bool>? _canExecute;
 
+        private readonly Action<object?> _executeWithParam;
+        private readonly Func<object?, bool>? _canExecuteWithParam;
+
         public event EventHandler? CanExecuteChanged;
 
         public RelayCommand(Action execute, Func<bool>? canExecute = null)
@@ -20,9 +23,31 @@ namespace TourPlanner.Frontend.Utils
             _canExecute = canExecute;
         }
 
-        public bool CanExecute(object? parameter) => _canExecute?.Invoke() ?? true;
+        public RelayCommand(Action<object?> execute, Func<object?, bool>? canExecute = null)
+        {
+            _executeWithParam = execute;
+            _canExecuteWithParam = canExecute;
+        }
 
-        public void Execute(object? parameter) => _execute();
+        public bool CanExecute(object? parameter)
+        {
+            if (_canExecuteWithParam != null)
+                return _canExecuteWithParam(parameter);
+
+            return _canExecute?.Invoke() ?? true;
+        }
+
+        public void Execute(object? parameter)
+        {
+            if (_executeWithParam != null)
+            {
+                _executeWithParam(parameter);
+            }
+            else
+            {
+                _execute?.Invoke();
+            }
+        }
 
         public void RaiseCanExecuteChanged() =>
             CanExecuteChanged?.Invoke(this, EventArgs.Empty);
