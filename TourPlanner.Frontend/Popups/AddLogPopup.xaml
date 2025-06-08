@@ -10,7 +10,6 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -25,16 +24,6 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <TextBlock Text="Date:" 
-                       VerticalAlignment="Center" 
-                       Margin="0,0,10,0"/>
-        </Grid>
-
-        <Grid Grid.Row="2" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
             <TextBlock Text="Comment:" 
                        VerticalAlignment="Center" 
                        Margin="0,0,10,0"/>
@@ -44,7 +33,7 @@
                      Tag="Enter comment"/>
         </Grid>
 
-        <Grid Grid.Row="3" Margin="0,0,0,10">
+        <Grid Grid.Row="2" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -62,7 +51,7 @@
             </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="4" Margin="0,0,0,10">
+        <Grid Grid.Row="3" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -80,7 +69,7 @@
             </ComboBox>
         </Grid>
 
-        <Grid Grid.Row="5" Margin="0,0,0,10">
+        <Grid Grid.Row="4" Margin="0,0,0,10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -104,7 +93,7 @@
                      Tag="Minutes"/>
         </Grid>
 
-        <StackPanel Grid.Row="7" 
+        <StackPanel Grid.Row="6" 
                     Orientation="Horizontal" 
                     HorizontalAlignment="Right">
             <Button Content="Save" 
