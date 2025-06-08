@@ -5,80 +5,31 @@ using TourPlanner.Frontend.Services;
 using System.Diagnostics;
 using System.ComponentModel;
 using TourPlanner.Frontend.Models;
+using System.Windows.Input;
+using TourPlanner.Frontend.Utils;
 
 namespace TourPlanner.Frontend.Popups
 {
     public partial class EditLogPopup : Window
     {
         private readonly EditLogViewModel _viewModel;
-        private readonly TourApiClient _apiClient;
 
         public EditLogPopup(TourLog log)
         {
             InitializeComponent();
-            _apiClient = new TourApiClient();
-            _viewModel = new EditLogViewModel
+            _viewModel = new EditLogViewModel(log);
+            _viewModel.RequestClose += () => 
             {
-                Id = log.Id,
-                TourId = log.TourId,
-                Date = log.Date,
-                Comment = log.Comment,
-                Difficulty = log.Difficulty - 1,
-                Rating = log.Rating - 1,
-                Hours = log.Duration.Hours,
-                Minutes = log.Duration.Minutes
+                DialogResult = _viewModel.IsSaved;
+                Close();
             };
             DataContext = _viewModel;
-        }
-
-        private async void OnSave(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(_viewModel.Comment))
-                {
-                    MessageBox.Show("Please enter a comment", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                var duration = TimeSpan.FromHours(_viewModel.Hours) + TimeSpan.FromMinutes(_viewModel.Minutes);
-                if (duration <= TimeSpan.Zero)
-                {
-                    MessageBox.Show("Duration must be greater than 0", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                Debug.WriteLine($"Updating log {_viewModel.Id} for tour {_viewModel.TourId}");
-                await _apiClient.UpdateLogAsync(
-                    _viewModel.Id,
-                    _viewModel.TourId,
-                    _viewModel.Date,
-                    _viewModel.Comment,
-                    _viewModel.Difficulty + 1,
-                    _viewModel.Rating + 1,
-                    duration
-                );
-
-                Debug.WriteLine($"Successfully updated log {_viewModel.Id}");
-                DialogResult = true;
-                Close();
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Error updating log: {ex.Message}");
-                MessageBox.Show($"Error updating log: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
-        private void OnCancel(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
         }
     }
 
     public class EditLogViewModel : INotifyPropertyChanged
     {
+        private readonly TourApiClient _apiClient;
         private string _id = string.Empty;
         private string _tourId = string.Empty;
         private DateTime _date;
@@ -87,6 +38,8 @@ namespace TourPlanner.Frontend.Popups
         private int _rating;
         private int _hours;
         private int _minutes;
+
+        public bool IsSaved { get; private set; }
 
         public string Id
         {
@@ -166,6 +119,75 @@ namespace TourPlanner.Frontend.Popups
                 _minutes = value;
                 OnPropertyChanged(nameof(Minutes));
             }
+        }
+
+        public ICommand SaveCommand { get; }
+        public ICommand CancelCommand { get; }
+
+        public event Action? RequestClose;
+
+        public EditLogViewModel(TourLog log)
+        {
+            _apiClient = new TourApiClient();
+            
+            // Initialize properties with the log data
+            Id = log.Id;
+            TourId = log.TourId;
+            Date = log.Date;
+            Comment = log.Comment;
+            Difficulty = log.Difficulty - 1;
+            Rating = log.Rating - 1;
+            Hours = log.Duration.Hours;
+            Minutes = log.Duration.Minutes;
+            
+            // Initialize commands
+            SaveCommand = new RelayCommand(OnSave);
+            CancelCommand = new RelayCommand(OnCancel);
+        }
+
+        private async void OnSave()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(Comment))
+                {
+                    MessageBox.Show("Please enter a comment", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var duration = TimeSpan.FromHours(Hours) + TimeSpan.FromMinutes(Minutes);
+                if (duration <= TimeSpan.Zero)
+                {
+                    MessageBox.Show("Duration must be greater than 0", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                Debug.WriteLine($"Updating log {Id} for tour {TourId}");
+                await _apiClient.UpdateLogAsync(
+                    Id,
+                    TourId,
+                    Date,
+                    Comment,
+                    Difficulty + 1,
+                    Rating + 1,
+                    duration
+                );
+
+                Debug.WriteLine($"Successfully updated log {Id}");
+                IsSaved = true;
+                RequestClose?.Invoke();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error updating log: {ex.Message}");
+                MessageBox.Show($"Error updating log: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void OnCancel()
+        {
+            IsSaved = false;
+            RequestClose?.Invoke();
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
