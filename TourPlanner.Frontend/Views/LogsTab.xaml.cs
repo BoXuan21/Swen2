@@ -42,6 +42,7 @@ namespace TourPlanner.Frontend.Views
         private void OnRequestOpenAddLogPopup()
         {
             var popup = new Popups.AddLogPopup(_viewModel.SelectedTour!);
+            popup.OnLogAdded = () => _viewModel.LoadLogsCommand.Execute(_viewModel.SelectedTour?.Id);
             if (popup.ShowDialog() == true)
             {
                 _viewModel.LoadLogsCommand.Execute(_viewModel.SelectedTour?.Id);

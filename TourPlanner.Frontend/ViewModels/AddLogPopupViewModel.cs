@@ -72,6 +72,7 @@ namespace TourPlanner.Frontend.ViewModels
         public ICommand CancelCommand { get; }
 
         public event Action? RequestClose;
+        public event Action? LogAdded;
 
         public AddLogPopupViewModel(string tourId)
         {
@@ -120,6 +121,7 @@ namespace TourPlanner.Frontend.ViewModels
                 Debug.WriteLine($"Creating log with values: TourId={TourId}, Comment={Comment}, Difficulty={Difficulty + 1}, Rating={Rating + 1}, Duration={duration}");
                 
                 await _tourApiClient.CreateLogAsync(TourId, Comment, Difficulty + 1, Rating + 1, duration);
+                LogAdded?.Invoke();
                 RequestClose?.Invoke();
             }
             catch (Exception ex)
