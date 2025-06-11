@@ -102,11 +102,11 @@ namespace TourPlanner.Frontend.ViewModels
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Distance) || !float.TryParse(Distance, out float distanceValue))
+            /*if (string.IsNullOrWhiteSpace(Distance) || !float.TryParse(Distance, out float distanceValue))
             {
                 MessageBox.Show("Please enter a valid distance value.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
-            }
+            }*/
 
             try
             {
@@ -116,8 +116,7 @@ namespace TourPlanner.Frontend.ViewModels
                     "", // Description can be empty
                     From,
                     To,
-                    TransportType,
-                    distanceValue
+                    TransportType
                 );
 
                 // Close the dialog
@@ -138,8 +137,7 @@ namespace TourPlanner.Frontend.ViewModels
                         "", // Description can be empty
                         From,
                         To,
-                        TransportType,
-                        distanceValue
+                        TransportType
                     );
 
                     // Close the dialog

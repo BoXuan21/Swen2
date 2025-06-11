@@ -125,26 +125,6 @@
                             </StackPanel>
                         </ScrollViewer>
                     </TabItem>
-
-                    <!-- Logs Tab -->
-                    <TabItem Header="Logs">
-                        <DockPanel>
-                            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="10">
-                                <Button Content="Add Log" Margin="0,0,5,0"/>
-                                <Button Content="Edit Log" Margin="0,0,5,0"/>
-                                <Button Content="Delete Log" Margin="0,0,5,0"/>
-                            </StackPanel>
-                            <!-- ScrollViewer for logs: Enables both vertical and horizontal scrolling
-                                 when the log list grows beyond the available space -->
-                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                                <ListBox Margin="10">
-                                    <ListBoxItem Content="Log Entry 1"/>
-                                    <ListBoxItem Content="Log Entry 2"/>
-                                    <ListBoxItem Content="Log Entry 3"/>
-                                </ListBox>
-                            </ScrollViewer>
-                        </DockPanel>
-                    </TabItem>
                 </TabControl>
             </DockPanel>
         </Grid>

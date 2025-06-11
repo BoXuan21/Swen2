@@ -69,7 +69,7 @@ namespace TourPlanner.Frontend.Services
         public async Task<JsonObject> GetTourByIdAsync(string id) => 
             await GetAsync<JsonObject>($"Tour/{id}");
 
-        public async Task<JsonObject> CreateTourAsync(string name, string description, string from, string to, string transportType, float distance)
+        public async Task<JsonObject> CreateTourAsync(string name, string description, string from, string to, string transportType)
         {
             var tour = new
             {
@@ -79,8 +79,6 @@ namespace TourPlanner.Frontend.Services
                 FromLocation = from,
                 ToLocation = to,
                 TransportType = transportType,
-                Distance = distance,
-                EstimatedTime = 0,
                 RouteInformation = "",
                 ListId = (string)null
             };

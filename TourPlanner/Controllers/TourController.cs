@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using TourPlanner.Data.Repositories;
 using TourPlanner.Models;
+using TourPlanner.Services;
 
 namespace TourPlanner.Controllers
 {
@@ -10,11 +11,14 @@ namespace TourPlanner.Controllers
     {
         private readonly ITourRepository _tourRepository;
         private readonly ILogger<TourController> _logger;
+        private readonly IToursService _toursService;
+
 
         public TourController(ITourRepository tourRepository, ILogger<TourController> logger)
         {
             _tourRepository = tourRepository;
             _logger = logger;
+            _toursService = new ToursService(new HttpClient());
         }
 
         [HttpGet]
@@ -64,6 +68,10 @@ namespace TourPlanner.Controllers
                 }
 
                 _logger.LogInformation("Creating new tour: {Name}", tour.Name);
+                tour.EstimatedTime = _toursService.CalculateEstimatedTime(tour);
+                tour.Distance = _toursService.CalculateDistance(tour);
+                tour.CoordsFrom = _toursService.ResolveCoords(tour)[0];
+                tour.CoordsFrom = _toursService.ResolveCoords(tour)[1];
                 var createdTour = await _tourRepository.CreateAsync(tour);
                 return CreatedAtAction(nameof(GetById), new { id = createdTour.Id }, createdTour);
             }
