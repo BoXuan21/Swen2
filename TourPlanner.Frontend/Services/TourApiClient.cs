@@ -73,7 +73,6 @@ namespace TourPlanner.Frontend.Services
         {
             var tour = new
             {
-                Id = Guid.NewGuid().ToString(),
                 Name = name,
                 Description = description ?? "",
                 FromLocation = from,

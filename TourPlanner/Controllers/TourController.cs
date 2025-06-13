@@ -58,20 +58,24 @@ namespace TourPlanner.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Tour>> Create(Tour tour)
+        public async Task<ActionResult<Tour>> Create([FromBody] Tour tour)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
+                    _logger.LogWarning("ModelState invalid: {@ModelState}", ModelState);
                     return BadRequest(ModelState);
                 }
 
                 _logger.LogInformation("Creating new tour: {Name}", tour.Name);
                 tour.EstimatedTime = _toursService.CalculateEstimatedTime(tour);
                 tour.Distance = _toursService.CalculateDistance(tour);
+                var coords = _toursService.ResolveCoords(tour);
+                tour.CoordsFrom = coords.Length > 0 ? coords[0] : null;
+                tour.CoordsTo = coords.Length > 1 ? coords[1] : null;
                 tour.CoordsFrom = _toursService.ResolveCoords(tour)[0];
-                tour.CoordsFrom = _toursService.ResolveCoords(tour)[1];
+                tour.CoordsTo = _toursService.ResolveCoords(tour)[1];
                 var createdTour = await _tourRepository.CreateAsync(tour);
                 return CreatedAtAction(nameof(GetById), new { id = createdTour.Id }, createdTour);
             }

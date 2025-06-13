@@ -32,8 +32,8 @@ namespace TourPlanner.Models
         public int EstimatedTime { get; set; }
         
         public string RouteInformation { get; set; }
-        public string CoordsFrom { get; set; }
-        public string CoordsTo { get; set; }
+        public string? CoordsFrom { get; set; }
+        public string? CoordsTo { get; set; }
 
         public string? ListId { get; set; }
         
