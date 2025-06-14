@@ -102,12 +102,6 @@ namespace TourPlanner.Frontend.ViewModels
                 return;
             }
 
-            /*if (string.IsNullOrWhiteSpace(Distance) || !float.TryParse(Distance, out float distanceValue))
-            {
-                MessageBox.Show("Please enter a valid distance value.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }*/
-
             try
             {
                 // Call the API to create the tour

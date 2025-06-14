@@ -81,6 +81,7 @@
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
                                             <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
                                         </Grid.RowDefinitions>
 
                                         <TextBlock Text="Name:" Grid.Row="0" Grid.Column="0" Margin="5"/>
@@ -100,6 +101,9 @@
 
                                         <TextBlock Text="Distance:" Grid.Row="5" Grid.Column="0" Margin="5"/>
                                         <TextBlock Grid.Row="5" Grid.Column="1" Margin="5" Text="{Binding SelectedTourDistance}"/>
+
+                                        <TextBlock Text="Estimated Time:" Grid.Row="6" Grid.Column="0" Margin="5"/>
+                                        <TextBlock Grid.Row="6" Grid.Column="1" Margin="5" Text="{Binding SelectedTourEstimatedTime}"/>
                                     </Grid>
                                 </GroupBox>
 

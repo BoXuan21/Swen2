@@ -30,17 +30,9 @@
                     </TextBox>
                 </controls:FormField>
 
-                <!-- Distance -->
-                <controls:FormField Label="Distance:" Margin="0,0,0,15">
-                    <TextBox Style="{StaticResource PlaceholderTextBox}" 
-                            Text="{Binding Distance, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Tag>Enter distance in km (e.g., 295.5)</TextBox.Tag>
-                    </TextBox>
-                </controls:FormField>
-
                 <!-- Transport Type -->
                 <controls:FormField Label="Transport Type:" Margin="0,0,0,20">
-                    <ComboBox SelectedItem="{Binding TransportType}" Height="30">
+                    <ComboBox SelectedValue="{Binding TransportType}" SelectedValuePath="Content" Height="30">
                         <ComboBoxItem Content="Car"/>
                         <ComboBoxItem Content="Bicycle"/>
                         <ComboBoxItem Content="Walking"/>

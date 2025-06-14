@@ -64,6 +64,13 @@ namespace TourPlanner.Frontend.ViewModels
             set { _selectedTourDistance = value; OnPropertyChanged(nameof(SelectedTourDistance)); }
         }
 
+        private string? _selectedTourEstimatedTime;
+        public string? SelectedTourEstimatedTime
+        {
+            get => _selectedTourEstimatedTime;
+            set { _selectedTourEstimatedTime = value; OnPropertyChanged(nameof(SelectedTourEstimatedTime)); }
+        }
+
         public ObservableCollection<string> TourNames { get; } = new ObservableCollection<string>();
 
         public event PropertyChangedEventHandler? PropertyChanged;

@@ -280,7 +280,7 @@ namespace TourPlanner.Frontend.Views
                         _viewModel.SelectedTourDescription = selectedTour["Description"]?.ToString() ?? "";
                         _viewModel.SelectedTourFrom = selectedTour["FromLocation"]?.ToString() ?? "";
                         _viewModel.SelectedTourTo = selectedTour["ToLocation"]?.ToString() ?? "";
-                        
+
                         // Extract just the transport type value
                         string transportType = selectedTour["TransportType"]?.ToString() ?? "";
                         if (transportType.Contains("."))
@@ -291,7 +291,8 @@ namespace TourPlanner.Frontend.Views
                         transportType = transportType.Replace("ComboBoxItem", "").Replace(":", "").Trim();
                         _viewModel.SelectedTourTransportType = transportType;
                         
-                        _viewModel.SelectedTourDistance = selectedTour["Distance"]?.ToString() ?? "";
+                        _viewModel.SelectedTourEstimatedTime = FormatSecondsToHoursMinutes(selectedTour["EstimatedTime"]?.ToString());
+                        _viewModel.SelectedTourDistance = FormatMetersToKilometers(selectedTour["Distance"]?.ToString());
                     }
                 }
                 catch (System.Exception ex)
@@ -299,6 +300,27 @@ namespace TourPlanner.Frontend.Views
                     MessageBox.Show($"Error loading tour details: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        private string FormatSecondsToHoursMinutes(string? secondsStr)
+        {
+            if (int.TryParse(secondsStr, out int seconds))
+            {
+                int hours = seconds / 3600;
+                int minutes = (seconds % 3600) / 60;
+                return $"{hours}:{minutes:D2}";
+            }
+            return secondsStr ?? "";
+        }
+
+        private string FormatMetersToKilometers(string? metersStr)
+        {
+            if (double.TryParse(metersStr, out double meters))
+            {
+                double kilometers = meters / 1000.0;
+                return $"{kilometers:0.00} km";
+            }
+            return metersStr ?? "";
         }
     }
 }
