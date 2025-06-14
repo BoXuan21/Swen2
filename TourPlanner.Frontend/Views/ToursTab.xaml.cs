@@ -209,11 +209,10 @@ namespace TourPlanner.Frontend.Views
                     
                     string from = tourToModify["FromLocation"].ToString();
                     string to = tourToModify["ToLocation"].ToString();
-                    string distance = tourToModify["Distance"].ToString();
                     string transportType = tourToModify["TransportType"].ToString();
 
                     var popup = new ModifyTourPopup();
-                    var popupVm = new ModifyTourPopupViewModel(tourName, from, to, distance, transportType);
+                    var popupVm = new ModifyTourPopupViewModel(tourName, from, to, transportType);
                     popup.DataContext = popupVm;
                     
                     popupVm.RequestClose += () => popup.Close();
@@ -233,7 +232,7 @@ namespace TourPlanner.Frontend.Views
                                     popupVm.From,
                                     popupVm.To,
                                     popupVm.TransportType,
-                                    float.Parse(popupVm.Distance)
+                                    float.Parse(tourToModify["Distance"].ToString()) // Keep existing distance
                                 );
                                 
                                 ConnectionStatus.Text = "Tour updated successfully";
@@ -293,6 +292,16 @@ namespace TourPlanner.Frontend.Views
                         
                         _viewModel.SelectedTourEstimatedTime = FormatSecondsToHoursMinutes(selectedTour["EstimatedTime"]?.ToString());
                         _viewModel.SelectedTourDistance = FormatMetersToKilometers(selectedTour["Distance"]?.ToString());
+
+                        // Update the map with the route
+                        if (RouteMap != null)
+                        {
+                            await RouteMap.SetRouteAsync(
+                                _viewModel.SelectedTourFrom,
+                                _viewModel.SelectedTourTo,
+                                _viewModel.SelectedTourTransportType.ToLower()
+                            );
+                        }
                     }
                 }
                 catch (System.Exception ex)

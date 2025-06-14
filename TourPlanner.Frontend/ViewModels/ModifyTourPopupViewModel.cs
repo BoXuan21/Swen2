@@ -40,17 +40,6 @@ namespace TourPlanner.Frontend.ViewModels
             }
         }
 
-        private string _distance;
-        public string Distance
-        {
-            get => _distance;
-            set
-            {
-                _distance = value;
-                OnPropertyChanged(nameof(Distance));
-            }
-        }
-
         private string _transportType = "Car";
         public string TransportType
         {
@@ -68,13 +57,12 @@ namespace TourPlanner.Frontend.ViewModels
         public event Action? RequestClose;
         public event Action<bool>? ModificationConfirmed;
 
-        public ModifyTourPopupViewModel(string tourName, string from, string to, string distance, string transportType)
+        public ModifyTourPopupViewModel(string tourName, string from, string to, string transportType)
         {
             // Initialize with existing tour data
             TourName = tourName;
             From = from;
             To = to;
-            Distance = distance;
             TransportType = transportType;
 
             ModifyCommand = new RelayCommand(OnModify);

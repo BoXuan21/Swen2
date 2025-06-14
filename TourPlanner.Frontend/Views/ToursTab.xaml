@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:TourPlanner.Frontend.Popups"
+             xmlns:controls="clr-namespace:TourPlanner.Frontend.Controls"
              xmlns:vm="clr-namespace:TourPlanner.Frontend.ViewModels"
              xmlns:conv="clr-namespace:TourPlanner.Frontend.Utils"
              mc:Ignorable="d" 
@@ -110,10 +111,8 @@
                                 <!-- Route Information -->
                                 <GroupBox Header="Route Information" Margin="0,0,0,10">
                                     <!-- MinHeight instead of fixed Height allows the map to grow with window size -->
-                                    <Border MinHeight="200" Background="#F5F5F5" Margin="5">
-                                        <TextBlock Text="Route Map will be displayed here" 
-                                                 HorizontalAlignment="Center" 
-                                                 VerticalAlignment="Center"/>
+                                    <Border MinHeight="300" Background="#F5F5F5" Margin="5">
+                                        <controls:MapControl x:Name="RouteMap" />
                                     </Border>
                                 </GroupBox>
 

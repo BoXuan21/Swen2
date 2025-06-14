@@ -98,37 +98,6 @@
                     </TextBox>
                 </Grid>
 
-                <!-- Distance -->
-                <Grid Margin="0,0,0,15">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="100"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="Distance:" VerticalAlignment="Center"/>
-                    <TextBox Grid.Column="1" Text="{Binding Distance, UpdateSourceTrigger=PropertyChanged}" 
-                            Height="30">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Style.Resources>
-                                    <VisualBrush x:Key="placeholderBrush" TileMode="None" Opacity="0.5" Stretch="None" AlignmentX="Left">
-                                        <VisualBrush.Visual>
-                                            <TextBlock Text="Enter distance in km (e.g., 295.5)" Margin="5,0,0,0"/>
-                                        </VisualBrush.Visual>
-                                    </VisualBrush>
-                                </Style.Resources>
-                                <Style.Triggers>
-                                    <Trigger Property="Text" Value="{x:Null}">
-                                        <Setter Property="Background" Value="{StaticResource placeholderBrush}"/>
-                                    </Trigger>
-                                    <Trigger Property="Text" Value="">
-                                        <Setter Property="Background" Value="{StaticResource placeholderBrush}"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
-                </Grid>
-
                 <!-- Transport Type -->
                 <Grid Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
