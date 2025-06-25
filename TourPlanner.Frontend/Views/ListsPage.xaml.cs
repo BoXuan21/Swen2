@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using TourPlanner.Frontend.ViewModels;
+using TourPlanner.Frontend.Services;
 
 namespace TourPlanner.Frontend.Views
 {
@@ -23,6 +25,7 @@ namespace TourPlanner.Frontend.Views
         public ListsPage()
         {
             InitializeComponent();
+            DataContext = new ListsViewModel();
         }
     }
 }
