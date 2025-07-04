@@ -11,12 +11,33 @@
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Search Bar -->
+        <Grid Grid.Row="0" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" Text="Search:" VerticalAlignment="Center" 
+                       FontWeight="SemiBold" Margin="0,0,10,0"/>
+            
+            <TextBox Grid.Column="1" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" 
+                     Height="30" Padding="5" VerticalContentAlignment="Center"
+                     ToolTip="Search in tour names, descriptions, locations, transport types, and log comments"/>
+            
+            <Button Grid.Column="2" Content="Clear" Command="{Binding ClearSearchCommand}" 
+                    Height="30" Padding="10,0" Margin="5,0,0,0" VerticalAlignment="Center"
+                    ToolTip="Clear search filter"/>
+        </Grid>
+
         <!-- Header with Refresh Button -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
             <Button Content="Refresh" Command="{Binding RefreshCommand}" 
                     Padding="10,5" Margin="0,0,10,0"/>
             <Button Content="Export to Report" Command="{Binding ExportToReportCommand}" 
@@ -26,14 +47,13 @@
         </StackPanel>
 
         <!-- Tours and Logs List -->
-        <ScrollViewer Grid.Row="1">
+        <ScrollViewer Grid.Row="2">
             <ItemsControl ItemsSource="{Binding TourWithLogs}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Border BorderBrush="LightGray" BorderThickness="1" Margin="0,0,0,10" Padding="10">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
@@ -69,23 +89,63 @@
                                            Margin="10,0,0,0"/>
                                 </Grid>
 
-                                <!-- Logs Header -->
-                                <TextBlock Grid.Row="1" Text="Tour Logs" FontWeight="SemiBold" 
-                                         Margin="0,10,0,5"/>
+                                <!-- Logs Section -->
+                                <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                                    <!-- Logs Header -->
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                                        <TextBlock Text="Tour Logs" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding Logs.Count, StringFormat='({0})'}" 
+                                                   FontWeight="Normal" Margin="5,0,0,0" Foreground="Gray"/>
+                                    </StackPanel>
 
-                                <!-- Logs DataGrid -->
-                                <DataGrid Grid.Row="2" ItemsSource="{Binding Logs}" 
-                                         AutoGenerateColumns="False" IsReadOnly="True"
-                                         HeadersVisibility="Column"
-                                         BorderThickness="1" BorderBrush="LightGray">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='{}{0:d}'}" Width="Auto"/>
-                                        <DataGridTextColumn Header="Duration" Binding="{Binding Duration}" Width="Auto"/>
-                                        <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}" Width="Auto"/>
-                                        <DataGridTextColumn Header="Rating" Binding="{Binding Rating}" Width="Auto"/>
-                                        <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="*"/>
-                                    </DataGrid.Columns>
-                                </DataGrid>
+                                    <!-- Logs Content -->
+                                    <Grid>
+                                        <!-- Show DataGrid when logs exist -->
+                                        <DataGrid ItemsSource="{Binding Logs}" 
+                                                 AutoGenerateColumns="False" IsReadOnly="True"
+                                                 HeadersVisibility="Column" CanUserReorderColumns="False"
+                                                 CanUserResizeColumns="True" CanUserSortColumns="False"
+                                                 BorderThickness="1" BorderBrush="LightGray"
+                                                 GridLinesVisibility="Horizontal" AlternatingRowBackground="WhiteSmoke"
+                                                 MinHeight="100" MaxHeight="300">
+                                            <DataGrid.Style>
+                                                <Style TargetType="DataGrid">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Logs.Count}" Value="0">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </DataGrid.Style>
+                                            <DataGrid.Columns>
+                                                <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat='{}{0:MM/dd/yyyy}'}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Duration" Binding="{Binding Duration, StringFormat='{}{0:hh\\:mm\\:ss}'}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Difficulty" Binding="{Binding Difficulty}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Rating" Binding="{Binding Rating}" Width="Auto"/>
+                                                <DataGridTextColumn Header="Comment" Binding="{Binding Comment}" Width="*"/>
+                                            </DataGrid.Columns>
+                                        </DataGrid>
+
+                                        <!-- Show message when no logs -->
+                                        <Border Background="LightGray" BorderBrush="Gray" BorderThickness="1" 
+                                                Padding="20" MinHeight="60">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Logs.Count}" Value="0">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="No logs available for this tour" 
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       FontStyle="Italic" Foreground="DarkGray"/>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
                             </Grid>
                         </Border>
                     </DataTemplate>

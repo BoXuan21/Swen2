@@ -59,47 +59,5 @@ namespace TourPlanner.Frontend.Utils
             CommandManager.InvalidateRequerySuggested();
         }
     }
-
-    /// <summary>
-    /// A generic command implementation that can always execute and accepts a parameter.
-    /// </summary>
-    /// <typeparam name="T">The type of the command parameter.</typeparam>
-    public class RelayCommand<T> : ICommand
-    {
-        private readonly Action<T> _execute;
-        private readonly Func<T, bool>? _canExecute;
-
-        public RelayCommand(Action<T> execute, Func<T, bool>? canExecute = null)
-        {
-            _execute = execute ?? throw new ArgumentNullException(nameof(execute));
-            _canExecute = canExecute;
-        }
-
-        public event EventHandler? CanExecuteChanged
-        {
-            add => CommandManager.RequerySuggested += value;
-            remove => CommandManager.RequerySuggested -= value;
-        }
-
-        public bool CanExecute(object? parameter)
-        {
-            return parameter is T typedParameter && (_canExecute?.Invoke(typedParameter) ?? true);
-        }
-
-        public void Execute(object? parameter)
-        {
-            if (parameter is T typedParameter)
-            {
-                _execute(typedParameter);
-            }
-        }
-
-        /// <summary>
-        /// Method used to raise the CanExecuteChanged event to indicate that the return value of the CanExecute method has changed.
-        /// </summary>
-        public void RaiseCanExecuteChanged()
-        {
-            CommandManager.InvalidateRequerySuggested();
-        }
-    }
+    
 }
