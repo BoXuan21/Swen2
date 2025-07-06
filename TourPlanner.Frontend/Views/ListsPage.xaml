@@ -7,9 +7,8 @@
              xmlns:viewmodels="clr-namespace:TourPlanner.Frontend.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
     <UserControl.Resources>
-        <local:SecondsToTimeSpanConverter x:Key="SecondsToTimeSpanConverter"/>
         <local:MetersToKilometersConverter x:Key="MetersToKilometersConverter"/>
     </UserControl.Resources>
 
