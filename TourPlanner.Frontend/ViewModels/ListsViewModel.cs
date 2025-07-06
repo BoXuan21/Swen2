@@ -98,7 +98,7 @@ namespace TourPlanner.Frontend.ViewModels
                         To = tourObj["toLocation"]?.ToString() ?? string.Empty,
                         TransportType = tourObj["transportType"]?.ToString() ?? string.Empty,
                         Distance = tourObj["distance"]?.GetValue<double>() ?? 0,
-                        EstimatedTime = TimeSpan.FromMinutes(tourObj["estimatedTime"]?.GetValue<double>() ?? 0),
+                        EstimatedTime = TimeSpan.FromSeconds(tourObj["estimatedTime"]?.GetValue<double>() ?? 0),
                         RouteImagePath = tourObj["routeInformation"]?.ToString() ?? string.Empty
                     };
 
