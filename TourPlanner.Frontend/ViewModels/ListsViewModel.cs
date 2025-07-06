@@ -3,6 +3,7 @@ using PdfSharp.Drawing;
 using PdfSharp.Fonts;
 using PdfSharp.Pdf;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows.Input;
@@ -10,7 +11,6 @@ using System.Windows.Threading;
 using TourPlanner.Frontend.Models;
 using TourPlanner.Frontend.Services;
 using TourPlanner.Frontend.Utils;
-using TourPlanner.Frontend.ViewModels.Base;
 
 namespace TourPlanner.Frontend.ViewModels
 {
@@ -26,13 +26,15 @@ namespace TourPlanner.Frontend.ViewModels
         }
     }
 
-    public class ListsViewModel : ViewModelBase
+    public class ListsViewModel : INotifyPropertyChanged
     {
         private readonly TourApiClient _apiClient;
         private readonly DispatcherTimer _refreshTimer;
         private ObservableCollection<TourWithLogs> _tourWithLogs;
         private ObservableCollection<TourWithLogs> _allTourWithLogs;
         private string _searchText;
+
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public ICommand ExportToReportCommand { get; }
         public ICommand PrintListCommand { get; }
@@ -46,7 +48,7 @@ namespace TourPlanner.Frontend.ViewModels
             set
             {
                 _tourWithLogs = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(TourWithLogs));
             }
         }
 
@@ -56,7 +58,7 @@ namespace TourPlanner.Frontend.ViewModels
             set
             {
                 _searchText = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(SearchText));
                 FilterData();
             }
         }
@@ -337,6 +339,9 @@ namespace TourPlanner.Frontend.ViewModels
                 );
             }
         }
+
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         private void PrintList()
         {

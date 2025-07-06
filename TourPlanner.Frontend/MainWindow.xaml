@@ -18,12 +18,6 @@
             <TabItem Header="Lists">
                 <views:ListsPage/>
             </TabItem>
-            <TabItem Header="Options">
-                <views:OptionsPage/>
-            </TabItem>
-            <TabItem Header="Help">
-                <views:HelpPage/>
-            </TabItem>
         </TabControl>
     </DockPanel>
     
