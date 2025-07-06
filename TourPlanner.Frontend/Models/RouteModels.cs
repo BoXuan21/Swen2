@@ -14,13 +14,7 @@ namespace TourPlanner.Frontend.Models
         public string Lon { get; set; }
         public string DisplayName { get; set; }
     }
-
-    public class RouteResult
-    {
-        public double Distance { get; set; }
-        public double Duration { get; set; }
-    }
-
+    
     public class RouteResponse
     {
         public RouteFeature[] Features { get; set; }

@@ -1,13 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TourPlanner.Frontend.Services
 {
@@ -21,18 +19,28 @@ namespace TourPlanner.Frontend.Services
         {
             _httpClient = new HttpClient();
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
-            _httpClient.Timeout = TimeSpan.FromSeconds(5);
             _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
             try
             {
-                _baseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"] ?? "https://localhost:7022/api";
+                var config = ConfigurationService.Instance;
+                _baseUrl = config.GetApiBaseUrl();
+                _httpClient.Timeout = TimeSpan.FromSeconds(config.GetApiTimeout());
                 Debug.WriteLine($"TourApiClient initialized with base URL: {_baseUrl}");
             }
             catch (Exception ex)
             {
+                // Fallback to default values if configuration fails
                 _baseUrl = "https://localhost:7022/api";
+                _httpClient.Timeout = TimeSpan.FromSeconds(5);
                 Debug.WriteLine($"Error reading config, using default URL: {_baseUrl}. Error: {ex.Message}");
+                
+                // Try to show user-friendly error message
+                System.Windows.MessageBox.Show(
+                    $"Configuration error: {ex.Message}\nUsing default API URL: {_baseUrl}", 
+                    "Configuration Warning", 
+                    System.Windows.MessageBoxButton.OK, 
+                    System.Windows.MessageBoxImage.Warning);
             }
         }
 

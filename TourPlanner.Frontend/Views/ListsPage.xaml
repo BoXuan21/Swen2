@@ -3,12 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TourPlanner.Frontend.Views"
+             xmlns:local="clr-namespace:TourPlanner.Frontend.Utils"
              xmlns:viewmodels="clr-namespace:TourPlanner.Frontend.ViewModels"
              mc:Ignorable="d"
              Background="{DynamicResource WindowBackground}"
              d:DesignHeight="450" d:DesignWidth="800">
-    
+
+    <UserControl.Resources>
+        <local:MetersToKilometersConverter x:Key="MetersToKilometersConverter"/>
+    </UserControl.Resources>
+
     <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -43,8 +47,6 @@
                     Padding="10,5" Margin="0,0,10,0"/>
             <Button Content="Export to Report" Command="{Binding ExportToReportCommand}" 
                     Margin="0,0,10,0" Padding="10,5"/>
-            <Button Content="Print List" Command="{Binding PrintListCommand}" 
-                    Padding="10,5"/>
         </StackPanel>
 
         <!-- Tours and Logs List -->
@@ -79,9 +81,9 @@
                                             <TextBlock Text="Transport: " FontWeight="SemiBold"/>
                                             <TextBlock Text="{Binding Tour.TransportType}" Margin="5,0"/>
                                             <TextBlock Text="Distance: " FontWeight="SemiBold" Margin="20,0,0,0"/>
-                                            <TextBlock Text="{Binding Tour.Distance, StringFormat='{}{0:F2} km'}" Margin="5,0"/>
+                                            <TextBlock Text="{Binding Tour.Distance, Converter={StaticResource MetersToKilometersConverter}}" Margin="5,0"/>
                                             <TextBlock Text="Est. Time: " FontWeight="SemiBold" Margin="20,0,0,0"/>
-                                            <TextBlock Text="{Binding Tour.EstimatedTime}" Margin="5,0"/>
+                                            <TextBlock Text="{Binding Tour.EstimatedTime, StringFormat='{}{0:hh\\:mm\\:ss}'}" Margin="5,0"/>
                                         </StackPanel>
                                     </StackPanel>
 

@@ -48,39 +48,24 @@ namespace TourPlanner.Frontend.Services
                 return _instance;
             }
         }
-
-        public string GetOpenRouteServiceApiKey()
+        
+        
+        public string GetApiBaseUrl()
         {
-            return GetConfigValue<string>("OpenRouteService", "ApiKey");
+            return GetConfigValue<string>("Api", "BaseUrl");
         }
 
-        public string GetOpenRouteServiceBaseUrl()
+        public int GetApiTimeout()
         {
-            return GetConfigValue<string>("OpenRouteService", "BaseUrl");
+            return GetConfigValue<int>("Api", "Timeout");
         }
+        
 
-        public string GetGeocodeUrl()
+        public int GetAutoRefreshInterval()
         {
-            return GetConfigValue<string>("OpenRouteService", "GeocodeUrl");
+            return GetConfigValueWithDefault<int>("UI", "AutoRefreshInterval", 30);
         }
-
-        public (double Lat, double Lon) GetMapDefaultCenter()
-        {
-            return (
-                GetConfigValue<double>("Map", "DefaultCenter.Lat"),
-                GetConfigValue<double>("Map", "DefaultCenter.Lon")
-            );
-        }
-
-        public int GetMapDefaultZoom()
-        {
-            return GetConfigValue<int>("Map", "DefaultZoom");
-        }
-
-        public string GetMapTileServer()
-        {
-            return GetConfigValue<string>("Map", "TileServer");
-        }
+        
 
         private T GetConfigValue<T>(string section, string path)
         {
@@ -111,6 +96,37 @@ namespace TourPlanner.Frontend.Services
             }
         }
 
+        private T GetConfigValueWithDefault<T>(string section, string path, T defaultValue)
+        {
+            try
+            {
+                if (!_config.ContainsKey(section))
+                {
+                    return defaultValue;
+                }
+
+                JsonElement element = _config[section];
+                string[] parts = path.Split('.');
+                
+                // Navigate through nested properties
+                foreach (var part in parts)
+                {
+                    if (!element.TryGetProperty(part, out element))
+                    {
+                        return defaultValue;
+                    }
+                }
+
+                // Convert the JsonElement to the requested type
+                return (T)Convert.ChangeType(GetElementValue(element, typeof(T)), typeof(T));
+            }
+            catch (Exception)
+            {
+                // Return default value if any error occurs
+                return defaultValue;
+            }
+        }
+
         private static object GetElementValue(JsonElement element, Type targetType)
         {
             return element.ValueKind switch
@@ -121,7 +137,8 @@ namespace TourPlanner.Frontend.Services
                 JsonValueKind.Number when targetType == typeof(float) => element.GetSingle(),
                 JsonValueKind.True => true,
                 JsonValueKind.False => false,
-                _ => throw new InvalidOperationException($"Unsupported value kind: {element.ValueKind}")
+                JsonValueKind.Number when targetType == typeof(bool) => element.GetInt32() != 0,
+                _ => throw new InvalidOperationException($"Unsupported value kind: {element.ValueKind} for type {targetType}")
             };
         }
     }

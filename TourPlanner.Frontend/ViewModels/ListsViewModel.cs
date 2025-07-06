@@ -1,11 +1,16 @@
+using Microsoft.Win32;
+using PdfSharp.Drawing;
+using PdfSharp.Fonts;
+using PdfSharp.Pdf;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
 using System.Windows.Input;
 using System.Windows.Threading;
-using TourPlanner.Frontend.ViewModels.Base;
-using TourPlanner.Frontend.Services;
 using TourPlanner.Frontend.Models;
+using TourPlanner.Frontend.Services;
 using TourPlanner.Frontend.Utils;
-using System.Linq;
 
 namespace TourPlanner.Frontend.ViewModels
 {
@@ -21,7 +26,7 @@ namespace TourPlanner.Frontend.ViewModels
         }
     }
 
-    public class ListsViewModel : ViewModelBase
+    public class ListsViewModel : INotifyPropertyChanged
     {
         private readonly TourApiClient _apiClient;
         private readonly DispatcherTimer _refreshTimer;
@@ -29,8 +34,9 @@ namespace TourPlanner.Frontend.ViewModels
         private ObservableCollection<TourWithLogs> _allTourWithLogs;
         private string _searchText;
 
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public ICommand ExportToReportCommand { get; }
-        public ICommand PrintListCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand SearchCommand { get; }
         public ICommand ClearSearchCommand { get; }
@@ -41,7 +47,7 @@ namespace TourPlanner.Frontend.ViewModels
             set
             {
                 _tourWithLogs = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(TourWithLogs));
             }
         }
 
@@ -51,7 +57,7 @@ namespace TourPlanner.Frontend.ViewModels
             set
             {
                 _searchText = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(SearchText));
                 FilterData();
             }
         }
@@ -64,15 +70,25 @@ namespace TourPlanner.Frontend.ViewModels
             _searchText = string.Empty;
 
             ExportToReportCommand = new RelayCommand(ExportToReport);
-            PrintListCommand = new RelayCommand(PrintList);
             RefreshCommand = new RelayCommand(LoadData);
             SearchCommand = new RelayCommand(FilterData);
             ClearSearchCommand = new RelayCommand(ClearSearch);
 
-            // Set up auto-refresh timer
+            // Set up auto-refresh timer using configuration
+            int refreshInterval = 30; // Default value
+            try
+            {
+                var config = ConfigurationService.Instance;
+                refreshInterval = config.GetAutoRefreshInterval();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error reading refresh interval config: {ex.Message}");
+            }
+            
             _refreshTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(30) // Refresh every 30 seconds
+                Interval = TimeSpan.FromSeconds(refreshInterval)
             };
             _refreshTimer.Tick += (s, e) => LoadData();
             _refreshTimer.Start();
@@ -98,7 +114,7 @@ namespace TourPlanner.Frontend.ViewModels
                         To = tourObj["toLocation"]?.ToString() ?? string.Empty,
                         TransportType = tourObj["transportType"]?.ToString() ?? string.Empty,
                         Distance = tourObj["distance"]?.GetValue<double>() ?? 0,
-                        EstimatedTime = TimeSpan.FromMinutes(tourObj["estimatedTime"]?.GetValue<double>() ?? 0),
+                        EstimatedTime = TimeSpan.FromSeconds(tourObj["estimatedTime"]?.GetValue<double>() ?? 0),
                         RouteImagePath = tourObj["routeInformation"]?.ToString() ?? string.Empty
                     };
 
@@ -206,12 +222,135 @@ namespace TourPlanner.Frontend.ViewModels
 
         private void ExportToReport()
         {
-            // TODO: Implement report generation
+            try
+            {
+                var saveFileDialog = new Microsoft.Win32.SaveFileDialog
+                {
+                    Filter = "PDF files (*.pdf)|*.pdf",
+                    FileName = $"TourReport_{DateTime.Now:yyyyMMdd_HHmmss}.pdf"
+                };
+                if (saveFileDialog.ShowDialog() != true)
+                    return;
+
+                string filePath = Path.GetFullPath(saveFileDialog.FileName);
+
+                // Create a new PDF document
+                PdfDocument document = new PdfDocument();
+                document.Info.Title = "Tour Report";
+
+                GlobalFontSettings.UseWindowsFontsUnderWindows = true;
+
+                // Create font objects
+                XFont titleFont = new XFont("Arial", 20);
+                XFont headerFont = new XFont("Arial", 14);
+                XFont normalFont = new XFont("Arial", 12);
+                XFont italicFont = new XFont("Arial", 12);
+
+                // Add a page
+                PdfPage page = document.AddPage();
+                XGraphics gfx = XGraphics.FromPdfPage(page);
+
+                double y = 40;
+                double leftMargin = 40;
+                double rightMargin = 40;
+                double pageWidth = page.Width - leftMargin - rightMargin;
+
+                // Title
+                gfx.DrawString("Tour Report", titleFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 30), XStringFormats.TopCenter);
+                y += 35;
+                gfx.DrawString($"Generated: {DateTime.Now:g}", normalFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 20), XStringFormats.TopLeft);
+                y += 30;
+
+                foreach (var tourWithLogs in TourWithLogs)
+                {
+                    var tour = tourWithLogs.Tour;
+
+                    // Add new page if needed
+                    if (y > page.Height - 100)
+                    {
+                        page = document.AddPage();
+                        gfx = XGraphics.FromPdfPage(page);
+                        y = 40;
+                    }
+
+                    gfx.DrawString(tour.Name, headerFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 20), XStringFormats.TopLeft);
+                    y += 22;
+                    gfx.DrawString($"Description: {tour.Description}", normalFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 20), XStringFormats.TopLeft);
+                    y += 18;
+                    gfx.DrawString($"From: {tour.From}    To: {tour.To}    Transport: {tour.TransportType}", normalFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 20), XStringFormats.TopLeft);
+                    y += 18;
+                    gfx.DrawString($"Distance: {tour.Distance / 1000.0:F2} km    Estimated Time: {tour.EstimatedTime:hh\\:mm\\:ss}", normalFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 20), XStringFormats.TopLeft);
+                    y += 18;
+
+                    // Logs
+                    if (tourWithLogs.Logs.Any())
+                    {
+                        gfx.DrawString("Logs:", normalFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 20), XStringFormats.TopLeft);
+                        y += 18;
+
+                        // Table header
+                        string[] headers = { "Date", "Duration", "Difficulty", "Rating", "Comment" };
+                        double[] colWidths = { 70, 70, 60, 60, pageWidth - 260 };
+                        double x = leftMargin;
+                        for (int i = 0; i < headers.Length; i++)
+                        {
+                            gfx.DrawString(headers[i], normalFont, XBrushes.Black, new XRect(x, y, colWidths[i], 20), XStringFormats.TopLeft);
+                            x += colWidths[i];
+                        }
+                        y += 16;
+
+                        // Table rows
+                        foreach (var log in tourWithLogs.Logs)
+                        {
+                            x = leftMargin;
+                            string[] row = {
+                                log.Date.ToString("yyyy-MM-dd"),
+                                log.Duration.ToString(@"hh\:mm\:ss"),
+                                log.Difficulty.ToString(),
+                                log.Rating.ToString(),
+                                log.Comment ?? ""
+                            };
+                            for (int i = 0; i < row.Length; i++)
+                            {
+                                gfx.DrawString(row[i], normalFont, XBrushes.Black, new XRect(x, y, colWidths[i], 20), XStringFormats.TopLeft);
+                                x += colWidths[i];
+                            }
+                            y += 16;
+
+                            // Add new page if needed
+                            if (y > page.Height - 60)
+                            {
+                                page = document.AddPage();
+                                gfx = XGraphics.FromPdfPage(page);
+                                y = 40;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        gfx.DrawString("No logs available.", italicFont, XBrushes.Black, new XRect(leftMargin, y, pageWidth, 20), XStringFormats.TopLeft);
+                        y += 18;
+                    }
+
+                    y += 20; // Spacer
+                }
+
+                document.Save(filePath);
+                document.Close();
+
+                System.Windows.MessageBox.Show("PDF export succeeded!", "Success");
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(
+                    $"Failed to export report: {ex.Message}\n{ex.StackTrace}",
+                    "Export Error"
+                );
+            }
         }
 
-        private void PrintList()
-        {
-            // TODO: Implement printing functionality
-        }
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        
     }
-} 
+}
