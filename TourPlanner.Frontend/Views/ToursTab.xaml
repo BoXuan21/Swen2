@@ -8,6 +8,7 @@
              xmlns:vm="clr-namespace:TourPlanner.Frontend.ViewModels"
              xmlns:conv="clr-namespace:TourPlanner.Frontend.Utils"
              mc:Ignorable="d" 
+             Background="{DynamicResource WindowBackground}"
              d:DesignHeight="650" d:DesignWidth="1000">
     <Grid>
         <Grid.RowDefinitions>

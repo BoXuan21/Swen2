@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TourPlanner.Frontend.Views"
              mc:Ignorable="d" 
+             Background="{DynamicResource WindowBackground}"
              d:DesignHeight="450" d:DesignWidth="800">
     <DockPanel Margin="10" Background="#EEE">
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">

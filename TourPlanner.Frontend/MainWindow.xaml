@@ -6,8 +6,17 @@
         xmlns:local="clr-namespace:TourPlanner.Frontend" 
         xmlns:views="clr-namespace:TourPlanner.Frontend.Views"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Background="{DynamicResource WindowBackground}"
+        Title="TourPlanner" Height="450" Width="800">
+
     <DockPanel Margin="10">
+
+        <!--  Light/Dark Theme Toggle Button -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,5">
+            <Button Content="Toggle Theme" Click="ToggleTheme_Click" Padding="10,5"/>
+        </StackPanel>
+
+        <!--Tabs -->
         <TabControl DockPanel.Dock="Top">
             <TabItem Header="Tours">
                 <views:ToursTab/>
@@ -26,5 +35,4 @@
             </TabItem>
         </TabControl>
     </DockPanel>
-    
 </Window>

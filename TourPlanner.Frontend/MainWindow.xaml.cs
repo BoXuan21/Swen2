@@ -17,9 +17,29 @@ namespace TourPlanner.Frontend
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool _isDarkMode = false;
+
         public MainWindow()
         {
             InitializeComponent();
+            ApplyTheme("Themes/LightTheme.xaml"); // Default to light
+        }
+
+        private void ToggleTheme_Click(object sender, RoutedEventArgs e)
+        {
+            _isDarkMode = !_isDarkMode;
+            var themePath = _isDarkMode ? "Themes/DarkTheme.xaml" : "Themes/LightTheme.xaml";
+            ApplyTheme(themePath);
+        }
+
+        private void ApplyTheme(string resourcePath)
+        {
+            var uri = new Uri(resourcePath, UriKind.Relative);
+            var resourceDict = new ResourceDictionary { Source = uri };
+
+            // Clear current merged dictionaries and apply new one
+            Application.Current.Resources.MergedDictionaries.Clear();
+            Application.Current.Resources.MergedDictionaries.Add(resourceDict);
         }
     }
 }
