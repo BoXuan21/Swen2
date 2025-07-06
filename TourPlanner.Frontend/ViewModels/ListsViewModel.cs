@@ -37,7 +37,6 @@ namespace TourPlanner.Frontend.ViewModels
         public event PropertyChangedEventHandler? PropertyChanged;
 
         public ICommand ExportToReportCommand { get; }
-        public ICommand PrintListCommand { get; }
         public ICommand RefreshCommand { get; }
         public ICommand SearchCommand { get; }
         public ICommand ClearSearchCommand { get; }
@@ -71,15 +70,25 @@ namespace TourPlanner.Frontend.ViewModels
             _searchText = string.Empty;
 
             ExportToReportCommand = new RelayCommand(ExportToReport);
-            PrintListCommand = new RelayCommand(PrintList);
             RefreshCommand = new RelayCommand(LoadData);
             SearchCommand = new RelayCommand(FilterData);
             ClearSearchCommand = new RelayCommand(ClearSearch);
 
-            // Set up auto-refresh timer
+            // Set up auto-refresh timer using configuration
+            int refreshInterval = 30; // Default value
+            try
+            {
+                var config = ConfigurationService.Instance;
+                refreshInterval = config.GetAutoRefreshInterval();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error reading refresh interval config: {ex.Message}");
+            }
+            
             _refreshTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromSeconds(30) // Refresh every 30 seconds
+                Interval = TimeSpan.FromSeconds(refreshInterval)
             };
             _refreshTimer.Tick += (s, e) => LoadData();
             _refreshTimer.Start();
@@ -342,10 +351,6 @@ namespace TourPlanner.Frontend.ViewModels
 
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-        private void PrintList()
-        {
-            // TODO: Implement printing functionality
-        }
+        
     }
 }

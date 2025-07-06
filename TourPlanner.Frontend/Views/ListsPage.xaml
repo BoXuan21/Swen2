@@ -46,8 +46,6 @@
                     Padding="10,5" Margin="0,0,10,0"/>
             <Button Content="Export to Report" Command="{Binding ExportToReportCommand}" 
                     Margin="0,0,10,0" Padding="10,5"/>
-            <Button Content="Print List" Command="{Binding PrintListCommand}" 
-                    Padding="10,5"/>
         </StackPanel>
 
         <!-- Tours and Logs List -->
